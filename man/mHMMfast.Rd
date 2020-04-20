@@ -2,7 +2,7 @@
 % Please edit documentation in R/mHMMfast.R
 \name{mHMMfast}
 \alias{mHMMfast}
-\title{Run mHMMfast}
+\title{Get estimations with mHMMfast}
 \usage{
 mHMMfast(
   s_data,
@@ -24,5 +24,5 @@ mHMMfast(
   \code{print} and \code{summary} methods to see the results.
 }
 \description{
-Run mHMMfast
+Get estimations with mHMMfast
 }
