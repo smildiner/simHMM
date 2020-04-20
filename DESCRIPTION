@@ -5,6 +5,12 @@ Version: 0.1.0
 Author: Sebastian Mildiner Moraga
 Maintainer: Sebastian Mildiner Moraga <smildiner@gmail.com>
 Description: This package was created in order to perform a simulation study for the EAM2020 conference.
+Imports:
+    MCMCpack,
+    mvtnorm,
+    stats,
+    Rdpack,
+    Rcpp
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
