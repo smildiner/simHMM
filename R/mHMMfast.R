@@ -1,4 +1,4 @@
-#' Run mHMMfast
+#' Get estimations with mHMMfast
 #'
 # @param parameter
 #'
