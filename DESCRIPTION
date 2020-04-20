@@ -1,11 +1,10 @@
 Package: simHMM
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Execute simulation study with mHMMbayes
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Sebastian Mildiner Moraga
+Maintainer: Sebastian Mildiner Moraga <smildiner@gmail.com>
+Description: This package was created in order to perform a simulation study for the EAM2020 conference.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
