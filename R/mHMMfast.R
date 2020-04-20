@@ -11,7 +11,7 @@
 #' @importFrom MCMCpack rdirichlet rwish
 #' @importFrom stats optim rnorm runif median
 # for RCpp
-#' @useDynLib mHMMbayes, .registration = TRUE
+#' @useDynLib mHMMfast, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #'
 #' @export
