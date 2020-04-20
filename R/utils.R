@@ -1,3 +1,7 @@
+#----------------------#
+#  Auxiliary functions :
+#----------------------#
+
 #' @keywords internal
 # Calculates the probabilities of observing each state at each point in time given
 # the observations of all dependent variables, used for the forward probabilities
@@ -10,7 +14,6 @@ all1 <- function(x, emiss, n_dep){
     allprobs <- Reduce("*", inp)
     return(allprobs)
 }
-
 
 #' @keywords internal
 # Could maybe made external
@@ -26,98 +29,11 @@ cat_mult_fw_r_to_cpp <- function(x, m, emiss, n_dep, gamma, delta = NULL){
     return(out)
 }
 
-library(Rcpp)
-#' @keywords internal
-cppFunction('List cat_mult_fw_cpp(NumericMatrix allprobs, NumericMatrix gamma, int m, int n, NumericVector delta) {
-
-            int i, t, k;
-            NumericVector foo(m);
-            NumericVector foo1(m);
-            double sumfoo;
-            NumericMatrix alpha_prob(m,n);
-            double lscale;
-            NumericMatrix lalpha(m, n);
-
-            foo = delta * allprobs(0,_);
-            sumfoo = 0;
-            for (i = 0; i < m; i++){
-            sumfoo += foo[i];
-            }
-            for (i = 0; i < m; i++){
-            alpha_prob(i,0) = foo[i]/sumfoo;
-            }
-            lscale = log(sumfoo);
-            for(i = 0; i < m; i++){
-            lalpha(i, 0) = log(alpha_prob(i, 0)) + lscale;
-            }
-
-            for (t = 1; t < n; t++){
-            for (i = 0; i < m; i++){
-            foo1[i] = 0;
-            for (k = 0; k < m; k++){
-            foo1[i] += alpha_prob(k, (t - 1)) * gamma(k,i);
-            }
-            }
-            foo = foo1 * allprobs(t,_);
-            sumfoo = 0;
-            for (i = 0; i < m; i++){
-            sumfoo += foo[i];
-            }
-            for (i = 0; i < m; i++){
-            alpha_prob(i,t) = foo[i]/sumfoo;
-            }
-            lscale = lscale + log(sumfoo);
-            for(i = 0; i < m; i++){
-            lalpha(i, t) = log(alpha_prob(i, t)) + lscale;
-            }
-            }
-
-            return List::create(alpha_prob, lalpha);
-            }')
-
-
-
-#' @keywords internal
-# Evaluate loglikelihood for intercept only MNL, bassed on P. Rossi 2004
-# llmnl_int <- function(beta, Obs, n_cat) {
-#     n_Obs <- length(Obs)
-#     betas <- c(0, beta)
-#     sum(betas[Obs]) - log(sum(exp(betas))) * n_Obs
-# }
-
-cppFunction('
-            double llmnl_int(NumericVector beta, IntegerVector Obs, int n_cat) {
-
-            int n_Obs = Obs.size();
-            //2: Calculate log sum only once:
-            // double expBetas_log_sum = log(sum(exp(betas)));
-            double expBetas_log_sum = 1.0; // std::exp(0)
-            for (int i = 1; i < n_cat; i++) {
-            expBetas_log_sum += std::exp(beta[i-1]);
-            };
-            expBetas_log_sum = std::log(expBetas_log_sum);
-
-            double ll_sum = 0;
-            //3: Use n_Obs, to avoid calling Xby.size() every time
-            for (int i = 0; i < n_Obs; i++) {
-            if(Obs[i] == 1L) continue;
-            ll_sum += beta[Obs[i]-2L];
-            };
-            //4: Use that we know denom is the same for all I:
-            ll_sum = ll_sum - expBetas_log_sum * n_Obs;
-            return ll_sum;
-            }
-            ')
-
-
 #' @keywords internal
 # Obtain fractional log likelihood for multinomial intercept only model, bassed on P. Rossi 2004
 llmnl_int_frac <- function(beta, Obs, n_cat, pooled_likel, w, wgt){
     return((1 - w) * llmnl_int(beta = beta, Obs = Obs, n_cat = n_cat) + w * wgt * pooled_likel)
 }
-
-
-
 
 #' @keywords internal
 # Obtain mnl -Expected[Hessian]  for intercept only model, bassed on P.Rossi 2004
@@ -128,9 +44,6 @@ mnlHess_int <- function(int, Obs, n_cat){
     Hess    <- (diag(x = prob[-1], nrow = n_cat-1) - outer(prob[-1],prob[-1])) * n_Obs
     return(Hess)
 }
-
-
-
 
 #' @keywords internal
 # one run of the random walk metropolis sampler for an intercept only multinomial distribution
