@@ -19,7 +19,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
                      gamma_hyp_prior = NULL, emiss_hyp_prior = NULL, gamma_sampler = NULL, emiss_sampler = NULL){
 
     if(!missing(print_iter)){
-        warning("The argument print_iter is depricated; please use show_progress instead to show the progress of the algorithm.")
+        warning("The argument print_iter is deprecated; please use show_progress instead to show the progress of the algorithm.")
     }
     # Initialize data -----------------------------------
     # dependent variable(s), sample size, dimensions gamma and conditional distribuiton
