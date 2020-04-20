@@ -79,11 +79,9 @@ mnl_RW_once <- function(int1, Obs, n_cat, mu_int_bar1, V_int1, scalar, candcov1)
     return(list(draw_int = draw_int, accept = accept, prob = prob))
 }
 
-
 #------------------------------#
 #  Changed auxiliary functions :
 #------------------------------#
-
 
 #' @keywords internal
 # simple functions used in mHMM
@@ -123,8 +121,6 @@ hms <- function(t){
           formatC(t %% 60, width = 2, format = "d", flag = "0"),
           sep = ":")
 }
-
-
 
 #' @keywords internal
 # computes probabilities from intercepts
