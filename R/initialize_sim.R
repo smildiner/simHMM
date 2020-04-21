@@ -4,7 +4,7 @@
 #'
 #' @export
 
-initialize_sim <- function(sim_sample_size = 30,
+init_log <- function(sim_sample_size = 30,
                            sim_n_t = c(400, 800, 1600),
                            sim_m = 3,
                            sim_n_dep = c(1, 2, 4),
