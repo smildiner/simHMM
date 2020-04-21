@@ -219,19 +219,19 @@ load_pars <- function(uid) {
 
     # Return model parameters
     return(list(sample_size = scenario[["sample_size"]],
-                n_t = scenario[["n_te"]],
+                n_t = scenario[["n_t"]],
                 m = scenario[["m"]],
                 n_dep = scenario[["n_dep"]],
-                q_emiss = scenario[["q_emiss"]],
+                q_emiss = rep(scenario[["q_emiss"]], scenario[["n_dep"]]),
                 gamma_var = scenario[["gamma_var"]],
-                emiss_var = scenario[["emiss_var"]],
+                emiss_var = rep(scenario[["emiss_var"]], scenario[["n_dep"]]),
                 noisiness = scenario[["noisiness"]],
-                overlapping = scenario[["overlapping"]],
+                overlapping = as.character(scenario[["overlapping"]]),
                 iter = scenario[["iter"]],
                 burnin = scenario[["burnin"]],
                 repetitions = scenario[["repetitions"]],
-                scenario_uid = scenario[["scenario_uid"]],
-                uid = scenario[["uid"]],
+                scenario_uid = as.character(scenario[["scenario_uid"]]),
+                uid = as.character(scenario[["uid"]]),
                 gamma_sim = gamma_sim,
                 emiss_sim = emiss_sim))
 
