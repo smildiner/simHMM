@@ -16,7 +16,7 @@ initialize_sim(
   sim_overlapping = c("low", "moderate", "high"),
   sim_iter = 5000,
   sim_burnin = 1750,
-  sim_repetitions = 250
+  sim_repetitions = 1:250
 )
 }
 \description{
