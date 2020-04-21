@@ -17,41 +17,33 @@ initialize_sim <- function(sim_sample_size = 30,
                            # Simulation parameters:
                            sim_iter = 5000,
                            sim_burnin = 1750,
-                           sim_repetitions = 250) {
+                           sim_repetitions = 1:250) {
 
     # Generate log with scenarios:
-    scenarios_log <- expand.grid(sim_sample_size,
-                                 sim_n_t,
-                                 sim_m,
-                                 sim_n_dep,
-                                 sim_q_emiss,
-                                 sim_gamma_var,
-                                 sim_emiss_var,
-                                 sim_noisiness,
-                                 sim_overlapping,
-                                 sim_iter,
-                                 sim_burnin,
-                                 sim_repetitions)
-
-    colnames(scenarios_log) <- c("sample_size",
-                             "n_t",
-                             "m",
-                             "n_dep",
-                             "q_emiss",
-                             "gamma_var",
-                             "emiss_var",
-                             "noisiness",
-                             "overlapping",
-                             "iter",
-                             "burnin",
-                             "repetitions")
+    scenarios_log <- expand.grid("sample_size" = sim_sample_size,
+                                 "n_t" = sim_n_t,
+                                 "m" = sim_m,
+                                 "n_dep" = sim_n_dep,
+                                 "q_emiss" = sim_q_emiss,
+                                 "gamma_var" = sim_gamma_var,
+                                 "emiss_var" = sim_emiss_var,
+                                 "noisiness" = sim_noisiness,
+                                 "overlapping" = sim_overlapping,
+                                 "iter" = sim_iter,
+                                 "burnin" = sim_burnin,
+                                 "repetitions" = sim_repetitions)
 
     scenarios_log <- cbind(scenarios_log,
                            scenario_uid = apply(scenarios_log, 1, digest))
     scenarios_log <- cbind(scenarios_log,
-                           uid = apply(scenarios, 1, digest))
+                           uid = apply(scenarios_log, 1, digest))
 
     # Save rds file
-    saveRDS(scenarios_log, "scenarios_log.rds")
+    if ("inputs" %in% dir()) {
+        saveRDS(scenarios_log, "inputs/scenarios_log.rds")
+    } else {
+        dir.create("inputs")
+        saveRDS(scenarios_log, "inputs/scenarios_log.rds")
+    }
 
 }
