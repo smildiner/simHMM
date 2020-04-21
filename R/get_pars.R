@@ -2,7 +2,7 @@
 #'
 #' @export
 
-load_pars <- function(uid) {
+get_pars <- function(uid) {
 
     # Check that log file exists
 
