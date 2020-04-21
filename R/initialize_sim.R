@@ -33,8 +33,11 @@ initialize_sim <- function(sim_sample_size = 30,
                                  "burnin" = sim_burnin,
                                  "repetitions" = sim_repetitions)
 
+    # Add scenario id
     scenarios_log <- cbind(scenarios_log,
                            scenario_uid = apply(scenarios_log, 1, digest))
+
+    # Add simulation id
     scenarios_log <- cbind(scenarios_log,
                            uid = apply(scenarios_log, 1, digest))
 
