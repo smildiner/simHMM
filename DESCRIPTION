@@ -10,7 +10,12 @@ Imports:
     mvtnorm,
     stats,
     Rdpack,
-    Rcpp
+    Rcpp,
+    digest,
+    dplyr,
+    magrittr,
+    multimode,
+    purrr
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
