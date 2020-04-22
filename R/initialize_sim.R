@@ -41,12 +41,14 @@ init_log <- function(sim_sample_size = 30,
                                  stringsAsFactors = FALSE)
 
     # Add scenario id
-    scenarios_log <- cbind(scenarios_log,
-                           scenario_uid = apply(scenarios_log[,-which(names(scenarios_log) == "repetitions")], 1, digest))
+    scenarios_log <- cbind.data.frame(scenarios_log,
+                           scenario_uid = apply(scenarios_log[,-which(names(scenarios_log) == "repetitions")], 1, digest),
+                           stringsAsFactors = FALSE)
 
     # Add simulation id
-    scenarios_log <- cbind(scenarios_log,
-                           uid = apply(scenarios_log, 1, digest))
+    scenarios_log <- cbind.data.frame(scenarios_log,
+                           uid = apply(scenarios_log, 1, digest),
+                           stringsAsFactors = FALSE)
 
     # Specify which simulation will be saved
     set.seed(seed)
