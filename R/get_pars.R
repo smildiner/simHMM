@@ -218,22 +218,22 @@ get_pars <- function(uid) {
     emiss_sim <- lapply(seq_along(emiss_sim),function(e, emiss_sim, eps_str, eps) {emiss_sim[[e]] + eps_str[[e]]*eps}, emiss_sim, eps_str, eps)
 
     # Return model parameters
-    return(list(sample_size = scenario[["sample_size"]],
-                n_t = scenario[["n_t"]],
-                m = scenario[["m"]],
-                n_dep = scenario[["n_dep"]],
-                q_emiss = rep(scenario[["q_emiss"]], scenario[["n_dep"]]),
-                gamma_var = scenario[["gamma_var"]],
-                emiss_var = rep(scenario[["emiss_var"]], scenario[["n_dep"]]),
-                noisiness = scenario[["noisiness"]],
-                overlapping = as.character(scenario[["overlapping"]]),
-                iter = scenario[["iter"]],
-                burnin = scenario[["burnin"]],
-                repetitions = scenario[["repetitions"]],
-                scenario_uid = as.character(scenario[["scenario_uid"]]),
-                uid = as.character(scenario[["uid"]]),
-                save_all = scenario[["save_all"]],
-                gamma_sim = gamma_sim,
-                emiss_sim = emiss_sim))
+    return(list(sample_size  = scenario[["sample_size"]],
+                n_t          = scenario[["n_t"]],
+                m            = scenario[["m"]],
+                n_dep        = scenario[["n_dep"]],
+                q_emiss      = rep(scenario[["q_emiss"]], scenario[["n_dep"]]),
+                gamma_var    = scenario[["gamma_var"]],
+                emiss_var    = rep(scenario[["emiss_var"]], scenario[["n_dep"]]),
+                noisiness    = scenario[["noisiness"]],
+                overlapping  = scenario[["overlapping"]],
+                iter         = scenario[["iter"]],
+                burnin       = scenario[["burnin"]],
+                repetitions  = scenario[["repetitions"]],
+                scenario_uid = scenario[["scenario_uid"]],
+                uid          = scenario[["uid"]],
+                save_all     = scenario[["save_all"]],
+                gamma_sim    = gamma_sim,
+                emiss_sim    = emiss_sim[1:scenario[["n_dep"]]]))
 
 }
