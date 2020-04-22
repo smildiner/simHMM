@@ -1,7 +1,7 @@
 #' Initialize simulation log
 #'
 #' @importFrom digest digest
-#' @importFrom dplyr group_by sample_n
+#' @importFrom dplyr group_by sample_frac
 #' @importFrom magrittr %>%
 #'
 #' @export
@@ -22,7 +22,7 @@ init_log <- function(sim_sample_size = 30,
                      sim_repetitions = 1:250,
 
                      # Save complete results:
-                     save_frac_res = 0.05,
+                     save_frac_res = 0.02,
                      seed = 123) {
 
     # Generate log with scenarios:
@@ -37,19 +37,20 @@ init_log <- function(sim_sample_size = 30,
                                  "overlapping" = sim_overlapping,
                                  "iter" = sim_iter,
                                  "burnin" = sim_burnin,
-                                 "repetitions" = sim_repetitions)
+                                 "repetitions" = sim_repetitions,
+                                 stringsAsFactors = FALSE)
 
     # Add scenario id
     scenarios_log <- cbind(scenarios_log,
-                           scenario_uid = apply(scenarios_log[,-"repetitions"], 1, digest))
+                           scenario_uid = apply(scenarios_log[,-which(names(scenarios_log) == "repetitions")], 1, digest))
 
     # Add simulation id
     scenarios_log <- cbind(scenarios_log,
-                           uid = apply(scenarios_log[,-"scenario_uid"], 1, digest))
+                           uid = apply(scenarios_log, 1, digest))
 
     # Specify which simulation will be saved
     set.seed(seed)
-    save_res_idx <- scenarios_log %>% group_by(scenario_uid) %>% sample_frac(save_n_res, size = save_frac_res)
+    save_res_idx <- scenarios_log %>% group_by(scenario_uid) %>% sample_frac(size = save_frac_res)
     scenarios_log[["save_all"]] <- scenarios_log[["uid"]] %in% save_res_idx[["uid"]]
 
     # Save rds file
