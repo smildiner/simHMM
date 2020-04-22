@@ -5,13 +5,9 @@
 \title{Fit mHMM using mHMMfast}
 \usage{
 fit_mHMM(
-  n,
-  n_t,
   m,
   n_dep,
   q_emiss,
-  gamma_var,
-  emiss_var,
   gamma,
   emiss,
   iter,

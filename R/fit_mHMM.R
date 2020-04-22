@@ -29,7 +29,7 @@ fit_mHMM <- function(m,
         # Set seed to simulate datasets
         for (q in 1:n_dep) {
 
-            start_emiss[[q]] <- simHMM::int_to_prob(simHMM::prob_to_int(emiss[[q]]) + matrix(runif(m*(q_emiss[q]-1), -1, 1), byrow = T, nrow = m, ncol = (q_emiss[q] - 1)))
+            start_emiss[[q]] <- int_to_prob(prob_to_int(emiss[[q]]) + matrix(runif(m*(q_emiss[q]-1), -1, 1), byrow = T, nrow = m, ncol = (q_emiss[q] - 1)))
 
         }
 
@@ -42,7 +42,7 @@ fit_mHMM <- function(m,
                     # xx = xx_vec,
                     start_val = c(list(start_gamma), start_emiss),
                     mcmc = list(J = iter, burn_in = burnin),
-                    return_path = TRUE,
+                    return_path = FALSE,
                     show_progress = FALSE)
     out[["time"]] <- Sys.time() - ti
 

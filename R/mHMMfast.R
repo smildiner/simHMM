@@ -477,8 +477,12 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
         out <- list(input = list(m = m, n_dep = n_dep, q_emiss = q_emiss, J = J,
                                  burn_in = burn_in, n_subj = n_subj, n_vary = n_vary, dep_labels = dep_labels),
                     PD_subj = PD_subj, gamma_int_subj = gamma_int_subj, emiss_int_subj = emiss_int_subj,
-                    gamma_int_bar = gamma_int_bar, gamma_V_int_bar = gamma_V_int_bar, gamma_cov_bar = gamma_cov_bar,
-                    emiss_int_bar = emiss_int_bar, emiss_V_int_bar = emiss_V_int_bar, emiss_cov_bar = emiss_cov_bar,
+                    gamma_int_bar = gamma_int_bar,
+                    gamma_V_int_bar = gamma_V_int_bar,
+                    gamma_cov_bar = gamma_cov_bar,
+                    emiss_int_bar = emiss_int_bar,
+                    emiss_V_int_bar = emiss_V_int_bar,
+                    emiss_cov_bar = emiss_cov_bar,
                     gamma_prob_bar = gamma_prob_bar, emiss_prob_bar = emiss_prob_bar,
                     gamma_naccept = gamma_naccept, emiss_naccept = emiss_naccept)
     }

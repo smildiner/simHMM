@@ -73,13 +73,15 @@ run_one_sim <- function(uid, seed){
 
     # Get evaluation metrics
 
-    # Save results: add the actual outcomes
-    if (model_pars[["save_all"]]) {
-        complete_data <- list("sim_data" = sim_data,
-             "output" = model_output)
-        saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
-    } else {
-        saveRDS(object = out, file = paste0("outputs/",as.character(uidTarget),".rds"))
-    }
+    # # Save results: add the actual outcomes
+    # if (model_pars[["save_all"]]) {
+    #     complete_data <- list("sim_data" = sim_data,
+    #          "output" = model_output)
+    #     saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
+    # } else {
+    #     saveRDS(object = out, file = paste0("outputs/",as.character(uidTarget),".rds"))
+    # }
+
+    return(list(pars = model_pars, data = sim_data, output = model_output))
 
 }
