@@ -60,6 +60,9 @@ init_log <- function(sim_sample_size = 30,
         saveRDS(scenarios_log, "inputs/scenarios_log.rds")
     } else {
         dir.create("inputs")
+        dir.create("outputs")
+        dir.create("outputs/complete_results")
+        dir.create("outputs/results")
         saveRDS(scenarios_log, "inputs/scenarios_log.rds")
     }
 
