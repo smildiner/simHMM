@@ -17,7 +17,7 @@ init_log(
   sim_iter = 5000,
   sim_burnin = 1750,
   sim_repetitions = 1:250,
-  save_frac_res = 0.05,
+  save_frac_res = 0.02,
   seed = 123
 )
 }
