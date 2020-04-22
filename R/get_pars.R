@@ -232,6 +232,7 @@ get_pars <- function(uid) {
                 repetitions = scenario[["repetitions"]],
                 scenario_uid = as.character(scenario[["scenario_uid"]]),
                 uid = as.character(scenario[["uid"]]),
+                save_all = scenario[["save_all"]],
                 gamma_sim = gamma_sim,
                 emiss_sim = emiss_sim))
 
