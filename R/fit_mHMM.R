@@ -33,7 +33,6 @@ fit_mHMM <- function(m,
 
         }
 
-
     }
 
     # Run the model

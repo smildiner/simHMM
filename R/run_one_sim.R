@@ -46,7 +46,28 @@ run_one_sim <- function(uid, seed){
     )
 
     # Fit mHMMbayes model
-
+    model_output <- fit_mHMM(
+        # Number of states
+        m = model_pars[["m"]],
+        # Number of emission distributions
+        n_dep = model_pars[["n_dep"]],
+        # Number of categories per dependent variable
+        q_emiss = model_pars[["q_emiss"]],
+        # Transition probabilities
+        gamma = model_pars[["gamma_sim"]],
+        # Emission distribution means + var
+        emiss = model_pars[["emiss_sim"]],
+        # Number of iterations
+        iter = model_pars[["iter"]],
+        # Burn-in iterations
+        burnin = model_pars[["burnin"]],
+        # Starting values for the transition probabilities
+        start_gamma = NULL,
+        # Starting values for the emission distributions
+        start_emiss = NULL,
+        # Simulated data
+        data_sim = sim_data
+    )
 
     # Get MAP estimates
 
@@ -55,7 +76,7 @@ run_one_sim <- function(uid, seed){
     # Save results: add the actual outcomes
     if (model_pars[["save_all"]]) {
         complete_data <- list("sim_data" = sim_data,
-             "output" = output)
+             "output" = model_output)
         saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
     } else {
         saveRDS(object = out, file = paste0("outputs/",as.character(uidTarget),".rds"))
