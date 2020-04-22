@@ -8,16 +8,15 @@
 
 run_one_sim <- function(uid, seed){
 
+    # Store the current state of the stream of RNG
+    seed_state <- list(state = .Random.seed,
+                       kind = RNGkind())
+
     # Get simulation parameters
     model_pars <- get_pars(uid = uid)
 
     # # Return model parameters
-    #             iter = scenario[["iter"]],
-    #             burnin = scenario[["burnin"]],
     #             repetitions = scenario[["repetitions"]],
-    #             scenario_uid = as.character(scenario[["scenario_uid"]]),
-    #             uid = as.character(scenario[["uid"]]),
-    #             save_all = scenario[["save_all"]],
 
     # Simulate data
     sim_data <- sim_mHMM(
@@ -73,15 +72,15 @@ run_one_sim <- function(uid, seed){
 
     # Get evaluation metrics
 
-    # # Save results: add the actual outcomes
-    # if (model_pars[["save_all"]]) {
-    #     complete_data <- list("sim_data" = sim_data,
-    #          "output" = model_output)
-    #     saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
-    # } else {
-    #     saveRDS(object = out, file = paste0("outputs/",as.character(uidTarget),".rds"))
-    # }
+    # Save results: add the actual outcomes
+    if (model_pars[["save_all"]]) {
+        complete_data <- list("sim_data" = sim_data,
+             "output" = model_output)
+        saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
+    } else {
+        saveRDS(object = out, file = paste0("outputs/",as.character(uidTarget),".rds"))
+    }
 
-    return(list(pars = model_pars, data = sim_data, output = model_output))
+    # return(list(pars = model_pars, data = sim_data, output = model_output))
 
 }
