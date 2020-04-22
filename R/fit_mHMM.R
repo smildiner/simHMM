@@ -2,13 +2,9 @@
 #'
 #' @export
 
-fit_mHMM <- function(n,
-                     n_t,
-                     m,
+fit_mHMM <- function(m,
                      n_dep,
                      q_emiss,
-                     gamma_var,
-                     emiss_var,
                      gamma,
                      emiss,
                      iter,
@@ -18,7 +14,6 @@ fit_mHMM <- function(n,
                      data_sim) {
 
     # Set starting values
-
     # gamma_start
     if (is.null(start_gamma)) {
 
