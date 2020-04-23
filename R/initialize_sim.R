@@ -18,7 +18,7 @@ init_log <- function(sim_sample_size = 30,
 
                      # Simulation parameters:
                      sim_iter = 5000,
-                     sim_burnin = 1750,
+                     sim_burnin = 1500,
                      sim_repetitions = 1:250,
 
                      # Save complete results:
