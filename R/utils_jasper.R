@@ -56,6 +56,8 @@ burn.mHMM <-  function(x) {
             next
         } else if(names(x)[idx] == "gamma_naccept") {
             next
+        } else if(names(x)[idx] == "emiss_naccept") {
+            next
         } else if (mode(x[[idx]]) == "list") {
             for(subj_idx in seq_along(x[[idx]])) {
                 x[[idx]][[subj_idx]] <- x[[idx]][[subj_idx]][(burn_in+1):J,]
