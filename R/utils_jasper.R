@@ -54,9 +54,11 @@ burn.mHMM <-  function(x) {
             next
         } else if(names(x)[idx] == "state_orders") {
             next
-        } else if(names(x)[idx] == "gamma_naccept") {
-            next
-        } else if(names(x)[idx] == "emiss_naccept") {
+        # } else if(names(x)[idx] == "gamma_naccept") {
+        #     next
+        # } else if(names(x)[idx] == "emiss_naccept") {
+        #     next
+        } else if(names(x)[idx] == "time") {
             next
         } else if (mode(x[[idx]]) == "list") {
             for(subj_idx in seq_along(x[[idx]])) {
@@ -105,7 +107,7 @@ MAP.mHMM <- function(x) {
     # Names
     names(map_out) <- names(feelthebern)
     for(param_idx in seq_along(feelthebern)) {
-        if(names(feelthebern)[param_idx] %in% c("label_switch", "input", "state_orders")) {
+        if(names(feelthebern)[param_idx] %in% c("label_switch", "input", "state_orders","sample_path","time")) {
             next
         }
         # if numeric, compute MAP
@@ -114,17 +116,31 @@ MAP.mHMM <- function(x) {
             map_out[[param_idx]][["median"]] <- unname(apply(feelthebern[[param_idx]], 2, median))
             map_out[[param_idx]][["SE"]] <- unname(apply(feelthebern[[param_idx]], 2, sd))
         } else {
-            map_out[[param_idx]] <- lapply(feelthebern[[param_idx]], function(x) {
-                list(
-                    "mean" = unname(apply(x, 2, mean)),
-                    "median" = unname(apply(x, 2, median)),
-                    "SE" = unname(apply(x, 2, sd))
-                )
-            })
+            if(mode(feelthebern[[param_idx]]) == "list") {
+                for(n_subj in seq_along(feelthebern[[param_idx]])) {
+                    if(mode(feelthebern[[param_idx]][[n_subj]]) == "list") {
+                        map_out[[param_idx]][[n_subj]] <- lapply(feelthebern[[param_idx]][[n_subj]], function(x) {
+                            list(
+                                "mean" = unname(apply(x, 2, mean)),
+                                "median" = unname(apply(x, 2, median)),
+                                "SE" = unname(apply(x, 2, sd))
+                            )
+                        })
+                    } else {
+                        map_out[[param_idx]][[n_subj]] <- list(
+                            "mean" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, mean)),
+                            "median" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, median)),
+                            "SE" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, sd))
+                        )
+                    }
+                }
+            }
         }
     }
-    # Remove label switch
-    map_out$label_switch <- NULL
+    # Add time
+    map_out[[which(names(feelthebern) == "time")]] <- feelthebern[[which(names(feelthebern) == "time")]]
+    # # Remove label switch
+    # map_out$label_switch <- NULL
     # Return
     return(map_out)
 }
