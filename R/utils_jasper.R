@@ -60,7 +60,7 @@ burn.mHMM <-  function(x) {
             next
         } else if (mode(x[[idx]]) == "list") {
             for(subj_idx in seq_along(x[[idx]])) {
-                if(mode(x[[idx]][[subj_idx]])) {
+                if(mode(x[[idx]][[subj_idx]]) == "list") {
                     for(n_dep_idx in seq_along(mode(x[[idx]][[subj_idx]]))) {
                         x[[idx]][[subj_idx]][[n_dep_idx]] <- x[[idx]][[subj_idx]][[n_dep_idx]][(burn_in+1):J,]
                     }
