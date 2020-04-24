@@ -60,7 +60,13 @@ burn.mHMM <-  function(x) {
             next
         } else if (mode(x[[idx]]) == "list") {
             for(subj_idx in seq_along(x[[idx]])) {
-                x[[idx]][[subj_idx]] <- x[[idx]][[subj_idx]][(burn_in+1):J,]
+                if(mode(x[[idx]][[subj_idx]])) {
+                    for(n_dep_idx in seq_along(mode(x[[idx]][[subj_idx]]))) {
+                        x[[idx]][[subj_idx]][[n_dep_idx]] <- x[[idx]][[subj_idx]][[n_dep_idx]][(burn_in+1):J,]
+                    }
+                } else {
+                    x[[idx]][[subj_idx]] <- x[[idx]][[subj_idx]][(burn_in+1):J,]
+                }
             }
         } else if (mode(x[[idx]]) == "numeric") {
             x[[idx]] <- x[[idx]][(burn_in+1):J,]
