@@ -69,16 +69,31 @@ run_one_sim <- function(uid, seed){
     )
 
     # Get MAP estimates
+    map_out <- MAP(model_output)
 
-    # Get evaluation metrics
+    # Add info
+    map_out <- c(scenario_uid = model_pars[["scenario_uid"]],
+                 uid = model_pars[["uid"]],
+                 map_out)
+
+    # Add credibility intervals
+
+    # Get evaluation metrics: not for now
 
     # Save results: add the actual outcomes
+    if (!("outputs" %in% dir())) {
+        dir.create("outputs")
+        dir.create("outputs/complete_results")
+        dir.create("outputs/results")
+    }
+
     if (model_pars[["save_all"]]) {
         complete_data <- list("sim_data" = sim_data,
              "output" = model_output)
         saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
+        saveRDS(object = map_out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
     } else {
-        saveRDS(object = out, file = paste0("outputs/",as.character(uidTarget),".rds"))
+        saveRDS(object = map_out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
     }
 
     # return(list(pars = model_pars, data = sim_data, output = model_output))
