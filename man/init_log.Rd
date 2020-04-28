@@ -15,7 +15,7 @@ init_log(
   sim_noisiness = c(0.03, 0.09, 0.15),
   sim_overlapping = c("low", "moderate", "high"),
   sim_iter = 5000,
-  sim_burnin = 1750,
+  sim_burnin = 1500,
   sim_repetitions = 1:250,
   save_frac_res = 0.02,
   seed = 123
