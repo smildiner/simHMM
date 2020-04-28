@@ -162,3 +162,64 @@ credible_interval <- function(x, type=c("0.95", "0.99")) {
         return(unname(apply(x, 2, function(y) quantile(y, c(0.005, 0.995)))))
     }
 }
+
+#' Retrieve CCI estimates for parameters
+#'
+#' @param x an mHMM object
+#'
+#' @return List. Confidence credibility intervals (CCIs) estimates for each parameter.
+#'         names of the elements are identical of the names of the input
+#'         parameters
+#' @export
+get_cci <- function(x, ...) {
+    UseMethod("get_cci", x)
+}
+#' @export
+get_cci.mHMM <- function(x) {
+    # Remove burn-in samples
+    feelthebern <- burn(x)
+    # Remove input
+    feelthebern$input <- NULL
+    # Get data types for each
+    dtypes <- vapply(feelthebern, function(x) mode(x), "string")
+    # Remove character types
+    feelthebern <- feelthebern[!dtypes == "character"]
+    # For each, collect MAP
+    cci_out <- vector("list", length(feelthebern))
+    # Names
+    names(cci_out) <- names(feelthebern)
+    for(param_idx in seq_along(feelthebern)) {
+        if(names(feelthebern)[param_idx] %in% c("label_switch", "input", "state_orders","sample_path","time")) {
+            next
+        }
+        # if numeric, compute MAP
+        if(mode(feelthebern[[param_idx]]) == "numeric") {
+            cci_out[[param_idx]][["CCI_95"]] <- unname(apply(feelthebern[[param_idx]], 2, function(x) as.vector(credible_interval(x, "0.95"))))
+            cci_out[[param_idx]][["CCI_99"]] <- unname(apply(feelthebern[[param_idx]], 2, function(x) as.vector(credible_interval(x, "0.99"))))
+        } else {
+            if(mode(feelthebern[[param_idx]]) == "list") {
+                for(n_subj in seq_along(feelthebern[[param_idx]])) {
+                    if(mode(feelthebern[[param_idx]][[n_subj]]) == "list") {
+                        cci_out[[param_idx]][[n_subj]] <- lapply(feelthebern[[param_idx]][[n_subj]], function(x) {
+                            list(
+                                "CCI_95" = unname(apply(x, 2, function(y) as.vector(credible_interval(y, "0.95")))),
+                                "CCI_99" = unname(apply(x, 2, function(y) as.vector(credible_interval(y, "0.99"))))
+                            )
+                        })
+                    } else {
+                        cci_out[[param_idx]][[n_subj]] <- list(
+                            "CCI_95" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, function(x) as.vector(credible_interval(x, "0.95")))),
+                            "CCI_99" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, function(x) as.vector(credible_interval(x, "0.99"))))
+                        )
+                    }
+                }
+            }
+        }
+    }
+    # Add time
+    cci_out[[which(names(feelthebern) == "time")]] <- feelthebern[[which(names(feelthebern) == "time")]]
+    # # Remove label switch
+    # cci_out$label_switch <- NULL
+    # Return
+    return(cci_out)
+}
