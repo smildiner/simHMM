@@ -75,7 +75,7 @@ run_one_sim <- function(uid, seed){
     cci_out <- get_cci(model_output)
 
     # Add scenario and iteration info
-    map_out <- list(scenario_uid = model_pars[["scenario_uid"]],
+    out <- list(scenario_uid = model_pars[["scenario_uid"]],
                  uid = model_pars[["uid"]],
                  map = map_out,
                  cci = cci_out)
@@ -93,9 +93,9 @@ run_one_sim <- function(uid, seed){
         complete_data <- list("sim_data" = sim_data,
              "output" = model_output)
         saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
-        saveRDS(object = map_out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
+        saveRDS(object = out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
     } else {
-        saveRDS(object = map_out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
+        saveRDS(object = out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
     }
 
     # return(list(pars = model_pars, data = sim_data, output = model_output))
