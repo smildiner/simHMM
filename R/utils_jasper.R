@@ -194,22 +194,22 @@ get_cci.mHMM <- function(x) {
         }
         # if numeric, compute MAP
         if(mode(feelthebern[[param_idx]]) == "numeric") {
-            cci_out[[param_idx]][["CCI_95"]] <- unname(apply(feelthebern[[param_idx]], 2, function(x) as.vector(credible_interval(x, "0.95"))))
-            cci_out[[param_idx]][["CCI_99"]] <- unname(apply(feelthebern[[param_idx]], 2, function(x) as.vector(credible_interval(x, "0.99"))))
+            cci_out[[param_idx]][["CCI_95"]] <- unname(as.vector(credible_interval(feelthebern[[param_idx]], "0.95")))
+            cci_out[[param_idx]][["CCI_99"]] <- unname(as.vector(credible_interval(feelthebern[[param_idx]], "0.99")))
         } else {
             if(mode(feelthebern[[param_idx]]) == "list") {
                 for(n_subj in seq_along(feelthebern[[param_idx]])) {
                     if(mode(feelthebern[[param_idx]][[n_subj]]) == "list") {
                         cci_out[[param_idx]][[n_subj]] <- lapply(feelthebern[[param_idx]][[n_subj]], function(x) {
                             list(
-                                "CCI_95" = unname(apply(x, 2, function(y) as.vector(credible_interval(y, "0.95")))),
-                                "CCI_99" = unname(apply(x, 2, function(y) as.vector(credible_interval(y, "0.99"))))
+                                "CCI_95" = unname(as.vector(credible_interval(x, "0.95"))),
+                                "CCI_99" = unname(as.vector(credible_interval(x, "0.99")))
                             )
                         })
                     } else {
                         cci_out[[param_idx]][[n_subj]] <- list(
-                            "CCI_95" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, function(x) as.vector(credible_interval(x, "0.95")))),
-                            "CCI_99" = unname(apply(feelthebern[[param_idx]][[n_subj]], 2, function(x) as.vector(credible_interval(x, "0.99"))))
+                            "CCI_95" = unname(as.vector(credible_interval(feelthebern[[param_idx]][[n_subj]], "0.95"))),
+                            "CCI_99" = unname(as.vector(credible_interval(feelthebern[[param_idx]][[n_subj]], "0.99")))
                         )
                     }
                 }
