@@ -54,10 +54,10 @@ burn.mHMM <-  function(x) {
             next
         } else if(names(x)[idx] == "state_orders") {
             next
-        # } else if(names(x)[idx] == "gamma_naccept") {
-        #     next
-        # } else if(names(x)[idx] == "emiss_naccept") {
-        #     next
+        } else if(names(x)[idx] == "gamma_naccept") {
+            next
+        } else if(names(x)[idx] == "emiss_naccept") {
+            next
         } else if(names(x)[idx] == "time") {
             next
         } else if (mode(x[[idx]]) == "list") {
