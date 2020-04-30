@@ -75,10 +75,11 @@ run_one_sim <- function(uid, seed){
     cci_out <- get_cci(model_output)
 
     # Add scenario and iteration info
-    out <- list(scenario_uid = model_pars[["scenario_uid"]],
-                 uid = model_pars[["uid"]],
-                 map = map_out,
-                 cci = cci_out)
+    out <- list(seed = seed_state,
+                scenario_uid = model_pars[["scenario_uid"]],
+                uid = model_pars[["uid"]],
+                map = map_out,
+                cci = cci_out)
 
     # Get evaluation metrics: not for now
 
