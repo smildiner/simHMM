@@ -14,8 +14,8 @@ get_pars <- function(uid) {
 
     # Specify the correct gamma, emiss and eps_str
     gamma_sim <- matrix(c(0.96, 0.02, 0.02,
-                          0.03, 0.95, 0.02,
-                          0.01, 0.02, 0.97), ncol = 3, byrow = TRUE)
+                          0.03, 0.94, 0.03,
+                          0.04, 0.04, 0.92), ncol = 3, byrow = TRUE)
 
     emiss_sim <- list("low" = list(matrix(c(0.96, 0.01, 0.01, 0.01, 0.01,
                                             0.02, 0.47, 0.47, 0.02, 0.02,
