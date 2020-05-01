@@ -8,78 +8,83 @@
 
 run_one_sim <- function(uid, seed){
 
-    # Store the current state of the stream of RNG
-    seed_state <- list(state = .Random.seed,
-                       kind = RNGkind())
+    exe_time <- system.time({
 
-    # Get simulation parameters
-    model_pars <- get_pars(uid = uid)
+        # Store the current state of the stream of RNG
+        seed_state <- list(state = .Random.seed,
+                           kind = RNGkind())
 
-    # # Return model parameters
-    #             repetitions = scenario[["repetitions"]],
+        # Get simulation parameters
+        model_pars <- get_pars(uid = uid)
 
-    # Simulate data
-    sim_data <- sim_mHMM(
-        # Number of observations for each person
-        n_t = model_pars[["n_t"]],
-        # Number of persons
-        n = model_pars[["sample_size"]],
-        # Type of emission distributions
-        data_distr = "categorical",
-        # Number of states
-        m = model_pars[["m"]],
-        # Number of emission distributions
-        n_dep = model_pars[["n_dep"]],
-        # Number of categories per dependent variable
-        q_emiss = model_pars[["q_emiss"]],
-        # Transition probabilities
-        gamma = model_pars[["gamma_sim"]],
-        # Emission distribution means + var
-        emiss_distr = model_pars[["emiss_sim"]],
-        # Between-subject variance for TPM
-        var_gamma = model_pars[["gamma_var"]],
-        # Between-subject variance for emission distributions
-        var_emiss = model_pars[["emiss_var"]],
-        # Additional arguments
-        return_ind_par = TRUE
-    )
+        # # Return model parameters
+        #             repetitions = scenario[["repetitions"]],
 
-    # Fit mHMMbayes model
-    model_output <- fit_mHMM(
-        # Number of states
-        m = model_pars[["m"]],
-        # Number of emission distributions
-        n_dep = model_pars[["n_dep"]],
-        # Number of categories per dependent variable
-        q_emiss = model_pars[["q_emiss"]],
-        # Transition probabilities
-        gamma = model_pars[["gamma_sim"]],
-        # Emission distribution means + var
-        emiss = model_pars[["emiss_sim"]],
-        # Number of iterations
-        iter = model_pars[["iter"]],
-        # Burn-in iterations
-        burnin = model_pars[["burnin"]],
-        # Starting values for the transition probabilities
-        start_gamma = NULL,
-        # Starting values for the emission distributions
-        start_emiss = NULL,
-        # Simulated data
-        data_sim = sim_data
-    )
+        # Simulate data
+        sim_data <- sim_mHMM(
+            # Number of observations for each person
+            n_t = model_pars[["n_t"]],
+            # Number of persons
+            n = model_pars[["sample_size"]],
+            # Type of emission distributions
+            data_distr = "categorical",
+            # Number of states
+            m = model_pars[["m"]],
+            # Number of emission distributions
+            n_dep = model_pars[["n_dep"]],
+            # Number of categories per dependent variable
+            q_emiss = model_pars[["q_emiss"]],
+            # Transition probabilities
+            gamma = model_pars[["gamma_sim"]],
+            # Emission distribution means + var
+            emiss_distr = model_pars[["emiss_sim"]],
+            # Between-subject variance for TPM
+            var_gamma = model_pars[["gamma_var"]],
+            # Between-subject variance for emission distributions
+            var_emiss = model_pars[["emiss_var"]],
+            # Additional arguments
+            return_ind_par = TRUE
+        )
 
-    # Get MAP estimates
-    map_out <- MAP(model_output)
+        # Fit mHMMbayes model
+        model_output <- fit_mHMM(
+            # Number of states
+            m = model_pars[["m"]],
+            # Number of emission distributions
+            n_dep = model_pars[["n_dep"]],
+            # Number of categories per dependent variable
+            q_emiss = model_pars[["q_emiss"]],
+            # Transition probabilities
+            gamma = model_pars[["gamma_sim"]],
+            # Emission distribution means + var
+            emiss = model_pars[["emiss_sim"]],
+            # Number of iterations
+            iter = model_pars[["iter"]],
+            # Burn-in iterations
+            burnin = model_pars[["burnin"]],
+            # Starting values for the transition probabilities
+            start_gamma = NULL,
+            # Starting values for the emission distributions
+            start_emiss = NULL,
+            # Simulated data
+            data_sim = sim_data
+        )
 
-    # Get credibility intervals
-    cci_out <- get_cci(model_output)
+        # Get MAP estimates
+        map_out <- MAP(model_output)
 
-    # Add scenario and iteration info
-    out <- list(seed = seed_state,
-                scenario_uid = model_pars[["scenario_uid"]],
-                uid = model_pars[["uid"]],
-                map = map_out,
-                cci = cci_out)
+        # Get credibility intervals
+        cci_out <- get_cci(model_output)
+
+        # Add scenario and iteration info
+        out <- list(seed = seed_state,
+                    scenario_uid = model_pars[["scenario_uid"]],
+                    uid = model_pars[["uid"]],
+                    time = exe_time[[3]],
+                    map = map_out,
+                    cci = cci_out)
+
+    })
 
     # Get evaluation metrics: not for now
 
