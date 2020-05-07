@@ -13,8 +13,6 @@ postprocess_param_est(z, m)
 }
 \value{
 data frame in which each parameter estimate has been placed in its own column.
-
-#' @export
 }
 \description{
 Postprocessing utility function for parameter estimates

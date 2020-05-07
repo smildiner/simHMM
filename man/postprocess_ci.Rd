@@ -13,8 +13,6 @@ postprocess_ci(z, m)
 }
 \value{
 data frame in which each CCI has been placed in its own column. (with _lower and _upper appended).
-
-#' @export
 }
 \description{
 Postprocess credible intervals

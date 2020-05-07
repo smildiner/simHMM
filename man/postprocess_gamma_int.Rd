@@ -13,8 +13,6 @@ postprocess_gamma_int(z, m)
 }
 \value{
 data frame in which each parameter estimate has been placed in its own column.
-
-#' @export
 }
 \description{
 Postprocess utility function for gamma_prob_bar

@@ -10,7 +10,7 @@
 #'
 #' @return data frame in which each parameter estimate has been placed in its own column.
 #'
-#' #' @export
+#' @export
 postprocess_param_est <- function(z, m) {
     # Create names
     nams <- paste0("state", 1:m)
@@ -37,7 +37,7 @@ postprocess_param_est <- function(z, m) {
 #'
 #' @return data frame in which each parameter estimate has been placed in its own column.
 #'
-#' #' @export
+#' @export
 postprocess_gamma_int <- function(z, m) {
     # Number of values is equal to m x (m-1)
     # Make names
@@ -62,7 +62,7 @@ postprocess_gamma_int <- function(z, m) {
 #'
 #' @return data frame in which each CCI has been placed in its own column. (with _lower and _upper appended).
 #'
-#' #' @export
+#' @export
 postprocess_ci <- function(z, m) {
     # Create names
     out_mp <- vector("list", length(z))
@@ -109,7 +109,7 @@ postprocess_ci <- function(z, m) {
 #'
 #' @return data frame with rows equal to the number of subjects and columns equal to the number of states x dependent variables x
 #'
-#' #' @export
+#' @export
 postprocess_subject_specific <- function(z, m) {
     # Number of subjects
     subjs <- paste0("subject_", 1:length(z))
