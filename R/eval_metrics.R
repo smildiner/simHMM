@@ -1,4 +1,4 @@
-## Metrics (% bias etc) go here
+## Evaluation metrics (% bias etc) go here
 # See https://cran.r-project.org/web/packages/rsimsum/vignettes/A-introduction.html
 # and https://github.com/JasperHG90/sleepsimReval/blob/master/R/sim_metrics.R
 
