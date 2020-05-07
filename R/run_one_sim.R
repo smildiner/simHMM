@@ -82,6 +82,7 @@ run_one_sim <- function(uid, seed){
                 scenario_uid = model_pars[["scenario_uid"]],
                 uid = model_pars[["uid"]],
                 time = exe_time[[3]],
+                truth = sim_data,
                 map = map_out,
                 cci = cci_out)
 
