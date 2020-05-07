@@ -13,6 +13,8 @@ postprocess_subject_specific(z, m)
 }
 \value{
 data frame with rows equal to the number of subjects and columns equal to the number of states x dependent variables x
+
+#' @export
 }
 \description{
 Postprocess subject-specific metrics
