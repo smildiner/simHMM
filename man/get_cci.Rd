@@ -4,7 +4,7 @@
 \alias{get_cci}
 \title{Retrieve CCI estimates for parameters}
 \usage{
-get_cci(x, ...)
+get_cci(x)
 }
 \arguments{
 \item{x}{an mHMM object}

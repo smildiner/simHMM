@@ -4,7 +4,7 @@
 \alias{get_subject_tpm}
 \title{Convert a list of probabilities into an m x m transition probability matrix}
 \usage{
-get_subject_tpm(x, ...)
+get_subject_tpm(x)
 }
 \arguments{
 \item{x}{an mHMM object}
