@@ -70,6 +70,9 @@ run_one_sim <- function(uid, seed){
             data_sim = sim_data
         )
 
+        # Add between subject variace to the output
+        model_output <- c(model_output, get_var_bar(model_output))
+
         # Get MAP estimates
         map_out <- MAP(model_output)
 
