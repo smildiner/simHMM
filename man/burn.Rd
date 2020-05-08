@@ -4,7 +4,7 @@
 \alias{burn}
 \title{Burn function for model output}
 \usage{
-burn(x, ...)
+burn(x)
 }
 \arguments{
 \item{x}{an mHMM object}

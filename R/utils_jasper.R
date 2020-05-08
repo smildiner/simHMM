@@ -7,11 +7,12 @@
 #'
 #' @return m x m transition probability matrix, where m is the number of hidden states
 #' @export
-get_subject_tpm <- function(x, ...) {
-    UseMethod("get_subject_tpm", x)
-}
-#' @export
-get_subject_tpm.mHMM <- function(x) {
+
+# get_subject_tpm <- function(x, ...) {
+#     UseMethod("get_subject_tpm", x)
+# }
+
+get_subject_tpm <- function(x) {
     # Select probs
     p <- apply(x$gamma_prob_bar,2, mean)
     # Select states
@@ -32,11 +33,12 @@ get_subject_tpm.mHMM <- function(x) {
 #' @return mHMM_cont object for which the burn-in samples have been removed
 #'         for each parameter.
 #' @export
-burn <- function(x, ...) {
-    UseMethod("burn", x)
-}
-#' @export
-burn.mHMM <-  function(x) {
+
+# burn <- function(x, ...) {
+#     UseMethod("burn", x)
+# }
+
+burn <-  function(x) {
     # Number of burn_in samples
     burn_in <- x$input$burn_in
     J <- x$input$J
@@ -89,11 +91,12 @@ burn.mHMM <-  function(x) {
 #'         names of the elements are identical of the names of the input
 #'         parameters
 #' @export
-MAP <- function(x, ...) {
-    UseMethod("MAP", x)
-}
-#' @export
-MAP.mHMM <- function(x) {
+
+# MAP <- function(x, ...) {
+#     UseMethod("MAP", x)
+# }
+
+MAP <- function(x) {
     # Remove burn-in samples
     feelthebern <- burn(x)
     # Remove input
@@ -171,11 +174,12 @@ credible_interval <- function(x, type=c("0.95", "0.99")) {
 #'         names of the elements are identical of the names of the input
 #'         parameters
 #' @export
-get_cci <- function(x, ...) {
-    UseMethod("get_cci", x)
-}
-#' @export
-get_cci.mHMM <- function(x) {
+
+# get_cci <- function(x, ...) {
+#     UseMethod("get_cci", x)
+# }
+
+get_cci <- function(x) {
     # Remove burn-in samples
     feelthebern <- burn(x)
     # Remove input

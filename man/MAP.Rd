@@ -4,7 +4,7 @@
 \alias{MAP}
 \title{Retrieve MAP estimates for parameters}
 \usage{
-MAP(x, ...)
+MAP(x)
 }
 \arguments{
 \item{x}{an mHMM object}
