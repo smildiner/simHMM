@@ -38,6 +38,44 @@ bias_MCMC_SE <- function(x) {
     )
 }
 
+
+#' Compute the parameter bias of a vector estimated parameters versus the ground-truth value of that parameter (modified from Jasper)
+#'
+#' @param true_param_value numeric. Value of the ground-truth parameter.
+#' @param simulated_param_values k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.
+#'
+#' @return numeric vector. Contains two elements: (1) average bias of simulated values versus the ground-truth value and (2) MCMC SE of the bias value
+#'
+#' @details This function computes the percentage bias by using the signed mean difference.
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @export
+rel_bias <- function(true_param_value, simulated_param_values) {
+    bias <- mean((simulated_param_values - true_param_value)/abs(true_param_value))
+    bmcse <- rel_bias_MCMC_SE(simulated_param_values, true_param_value)
+    ret <- c(bias, bmcse)
+    names(ret) <- c("rel_bias", "rel_MCMC_SE")
+    return(ret)
+}
+
+#' MCMC Standard Error of the bias value
+#'
+#' @param x k-length numeric vector. k >= 1 and holds the parameter values of the estimated parameters.
+#'
+#' @seealso Morris, Tim P., Ian R. White, and Michael J. Crowther. "Using simulation studies to evaluate statistical methods." Statistics in medicine 38.11 (2019): 2074-2102.
+#'
+#' @return Bias MCMC SE
+rel_bias_MCMC_SE <- function(x, y) {
+    nsim <- length(x)
+    a <- (1 / (nsim - 1))
+    b <- sum(((x - mean(x))/abs(y))^2)
+    return(
+        sqrt((a * b)/(nsim))
+    )
+}
+
+
 #' Compute the empirical SE
 #'
 #' @param x numeric vector. Simulated parameter estimates
@@ -77,12 +115,19 @@ empirical_MCMC_SE <- function(emp_se, nsim) {
 #'
 #' @export
 coverage <- function(CI, true_param_value) {
-    cvr <- mean(vapply(CI, function(x) (x[1] <= true_param_value) & (true_param_value <= x[2]), 0))
+    cvr <- mean(do.call(rbind,map2(CI,true_param_value, function(x,y) (x[1] <= y) & (y <= x[2]))))
     cvrSE <- coverage_MCMC_SE(cvr, length(CI))
     ret <- c(cvr, cvrSE)
     names(ret) <- c("coverage", "MCMC_SE")
     return(ret)
 }
+# coverage <- function(CI, true_param_value) {
+#     cvr <- mean(vapply(CI, function(x) (x[1] <= true_param_value) & (true_param_value <= x[2]), 0))
+#     cvrSE <- coverage_MCMC_SE(cvr, length(CI))
+#     ret <- c(cvr, cvrSE)
+#     names(ret) <- c("coverage", "MCMC_SE")
+#     return(ret)
+# }
 
 #' Coverage MCMC Standard Error
 #'
@@ -214,17 +259,20 @@ average_model_SE_mcmc_se <- function(SE, n_sim, modSE) {
 summarize_simulation_scenario <- function(true_values, simulated_values,
                                           lower_cci, upper_cci, SE = NULL,
                                           compute_multimodal = FALSE) {
-    out_bias <- unname(bias(true_values[1], simulated_values))
-    out_MSE <- unname(MSE(simulated_values, true_values[1]))
+    out_bias <- unname(bias(true_values, simulated_values))
+    out_rel_bias <- unname(rel_bias(true_values, simulated_values))
+    out_MSE <- unname(MSE(simulated_values, true_values))
     out_ESE <- unname(empirical_SE(simulated_values))
     # Compute coverage
     cci <- map2(lower_cci, upper_cci, function(x,y) c(x, y))
-    out_coverage <- unname(coverage(cci, true_values[1]))
+    out_coverage <- unname(coverage(cci, true_values))
     # Compute bias-corrected coverage
     out_coverage_bc <- unname(coverage(cci, mean(simulated_values)))
     df <- data.frame(
         "bias" = out_bias[1],
         "bias_mcmc_se" = out_bias[2],
+        "rel_bias" = out_rel_bias[1],
+        "rel_bias_mcmc_se" = out_rel_bias[2],
         "empirical_se" = out_ESE[1],
         "empirical_se_mcmc_se" = out_ESE[2],
         "MSE" = out_MSE[1],
@@ -244,3 +292,40 @@ summarize_simulation_scenario <- function(true_values, simulated_values,
     }
     return(df)
 }
+
+# summarize_simulation_scenario <- function(true_values, simulated_values,
+#                                           lower_cci, upper_cci, SE = NULL,
+#                                           compute_multimodal = FALSE) {
+#     out_bias <- unname(bias(true_values[1], simulated_values))
+#     out_rel_bias <- unname(rel_bias(true_values[1], simulated_values))
+#     out_MSE <- unname(MSE(simulated_values, true_values[1]))
+#     out_ESE <- unname(empirical_SE(simulated_values))
+#     # Compute coverage
+#     cci <- map2(lower_cci, upper_cci, function(x,y) c(x, y))
+#     out_coverage <- unname(coverage(cci, true_values[1]))
+#     # Compute bias-corrected coverage
+#     out_coverage_bc <- unname(coverage(cci, mean(simulated_values)))
+#     df <- data.frame(
+#         "bias" = out_bias[1],
+#         "bias_mcmc_se" = out_bias[2],
+#         "rel_bias" = out_rel_bias[1],
+#         "rel_bias_mcmc_se" = out_rel_bias[2],
+#         "empirical_se" = out_ESE[1],
+#         "empirical_se_mcmc_se" = out_ESE[2],
+#         "MSE" = out_MSE[1],
+#         "MSE_mcmc_se" = out_MSE[2],
+#         "coverage" = out_coverage[1],
+#         "coverage_mcmc_se" = out_coverage[2],
+#         "bias_corr_coverage" = out_coverage_bc[1],
+#         "bias_corr_coverage_mcmc_se" = out_coverage_bc[2]
+#     )
+#     if(compute_multimodal) {
+#         df$multimodal <- modetest(simulated_values, mod0 = 1)$p.value
+#     }
+#     if(!is.null(SE)) {
+#         out_modSE <- unname(average_model_SE(SE))
+#         df$modSE = out_modSE[1]
+#         df$modSE_mcmc_se = out_modSE[2]
+#     }
+#     return(df)
+# }
