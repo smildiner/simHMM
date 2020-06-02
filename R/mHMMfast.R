@@ -228,7 +228,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
 
     if(nx[1] > 1){
         gamma_cov_bar				<- matrix(, nrow = J, ncol = ((m-1) * m) * (nx[1] - 1))
-        colnames(gamma_cov_bar) <- paste( paste("cov", 1 : (nx[1] - 1), "_", sep = ""), "S", rep(1:m, each = (m-1) * (nx[1] - 1)), "toS", rep(2:m, m * (nx[1] - 1)), sep = "")
+        colnames(gamma_cov_bar) <- paste( paste("cov", rep(1 : (nx[1] - 1),each = nx[1]-1), "_", sep = ""), "S", rep(1:m, each = (m-1) * (nx[1] - 1)), "toS", rep(2:m, m * (nx[1] - 1)), sep = "")
         gamma_cov_bar[1,] <- 0
     } else{
         gamma_cov_bar <- "No covariates where used to predict the transition probability matrix"
@@ -252,7 +252,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
         names(emiss_cov_bar) <- dep_labels
         for(q in 1:n_dep){
             if(nx[1 + q] > 1){
-                colnames(emiss_cov_bar[[q]]) <-  paste( paste("cov", 1 : (nx[1 + q] - 1), "_", sep = ""), "emiss", rep(2:q_emiss[q], m * (nx[1 + q] - 1)), "_S", rep(1:m, each = (q_emiss[q] - 1) * (nx[1 + q] - 1)), sep = "")
+                colnames(emiss_cov_bar[[q]]) <-  paste( paste("cov", rep(1 : (nx[1+q] - 1),each = nx[1+q]-1), "_", sep = ""), "emiss", rep(2:q_emiss[q], m * (nx[1 + q] - 1)), "_S", rep(1:m, each = (q_emiss[q] - 1) * (nx[1 + q] - 1)), sep = "")
                 emiss_cov_bar[[q]][1,] <- 0
             } else {
                 emiss_cov_bar[[q]] <- "No covariates where used to predict the emission probabilities for this outcome"
