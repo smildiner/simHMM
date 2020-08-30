@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim <- function(uid, seed){
+run_one_sim <- function(uid, seed, subj_data = TRUE){
 
     exe_time <- system.time({
 
@@ -101,6 +101,13 @@ run_one_sim <- function(uid, seed){
     if (model_pars[["save_all"]]) {
         complete_data <- list("sim_data" = sim_data,
              "output" = model_output)
+
+        if(subj_data == FALSE) {
+            complete_data[["output"]][["PD_subj"]] <- NULL
+            complete_data[["output"]][["gamma_int_subj"]] <- NULL
+            complete_data[["output"]][["emiss_int_subj"]] <- NULL
+        }
+
         saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
         saveRDS(object = out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
     } else {
