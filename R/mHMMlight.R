@@ -1,4 +1,4 @@
-#' Get estimations with mHMMfast
+#' Get estimations with mHMMlight
 #'
 # @param parameter
 #'
@@ -15,8 +15,10 @@
 #' @importFrom Rcpp sourceCpp
 #'
 #' @export
-mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALSE, print_iter, show_progress = TRUE,
-                     gamma_hyp_prior = NULL, emiss_hyp_prior = NULL, gamma_sampler = NULL, emiss_sampler = NULL){
+
+mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALSE, print_iter, show_progress = TRUE,
+                     gamma_hyp_prior = NULL, emiss_hyp_prior = NULL, gamma_sampler = NULL, emiss_sampler = NULL,
+                     subj_data = FALSE){
 
     if(!missing(print_iter)){
         warning("The argument print_iter is deprecated; please use show_progress instead to show the progress of the algorithm.")
@@ -205,7 +207,9 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
     PD[1, ((sum(m * q_emiss) + 1)) :((sum(m * q_emiss) + m * m))] <- unlist(sapply(start_val, t))[1:(m*m)]
     PD[1, 1:((sum(m * q_emiss)))] <- unlist(sapply(start_val, t))[(m*m + 1): (m*m + sum(m * q_emiss))]
 
-    PD_subj				<- rep(list(PD), n_subj)
+    if(subj_data){
+        PD_subj				<- rep(list(PD), n_subj)
+    }
 
     # Define object for population posterior density (probabilities and regression coefficients parameterization )
     gamma_prob_bar		<- matrix(, nrow = J, ncol = (m * m))
@@ -263,8 +267,10 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
     }
 
     # Define object for subject specific posterior density (regression coefficients parameterization )
-    gamma_int_subj			<- rep(list(gamma_int_bar), n_subj)
-    emiss_int_subj			<- rep(list(emiss_int_bar), n_subj)
+    if(subj_data){
+        gamma_int_subj			<- rep(list(gamma_int_bar), n_subj)
+        emiss_int_subj			<- rep(list(emiss_int_bar), n_subj)
+    }
 
     # Put starting values in place for fist run forward algorithm
     emiss_sep 			<- vector("list", n_dep)
@@ -275,6 +281,62 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
     emiss				  <- rep(list(emiss_sep), n_subj)
     gamma 			<- rep(list(matrix(PD[1,(sum(m*q_emiss) + 1):(sum(m * q_emiss) + m * m)], byrow = TRUE, ncol = m)), n_subj)
     delta 			<- rep(list(solve(t(diag(m) - gamma[[1]] + 1), rep(1, m))), n_subj)
+
+    #----------------------------------------------------#
+    # Define "light" objects all together for simplicity #
+    #----------------------------------------------------#
+
+    # matrix with dim(n_subj, sum(m * q_emiss) + m * m + 1)
+    PD_light            <- matrix(, nrow = n_subj, ncol = sum(m * q_emiss) + m * m + 1)
+    colnames(PD_light) 	<- c(PD_emiss_names, paste("S", rep(1:m, each = m), "toS", rep(1:m, m), sep = ""), "LL")
+
+    # matrix with dim(n_subj, (m-1)*m)
+    gamma_int_light				<- matrix(, nrow = n_subj, ncol = ((m-1) * m))
+    colnames(gamma_int_light) <- paste("int_S", rep(1:m, each = m-1), "toS", rep(2:m, m), sep = "")
+
+    # # matrix with dim(n_subj, (m-1) * m) * (nx[1] - 1))
+    # if(nx[1] > 1){
+    #     gamma_cov_light				<- matrix(, nrow = n_subj, ncol = ((m-1) * m) * (nx[1] - 1))
+    #     colnames(gamma_cov_light) <- paste(paste("cov", rep(1 : (nx[1] - 1),each = nx[1]-1), "_", sep = ""), "S", rep(1:m, each = (m-1) * (nx[1] - 1)), "toS", rep(2:m, m * (nx[1] - 1)), sep = "")
+    # }
+
+    # list of n_dep elements, each element is a matrix with dim(n_subj, (q_emiss-1)*m)
+    emiss_int_light			<- lapply((q_emiss-1) * m, dif_matrix, rows = n_subj)
+    names(emiss_int_light) <- dep_labels
+    for(q in 1:n_dep){
+        colnames(emiss_int_light[[q]]) <-  paste("int_Emiss", rep(2:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q] - 1), sep = "")
+    }
+
+    # # list of n_dep elements, each element is a matrix with dim(n_subj, (q_emiss-1)*m*(nx[-1]-1))
+    # if(sum(nx[-1]) > n_dep){
+    #     emiss_cov_light			<- lapply((q_emiss-1) * m * (nx[-1] - 1 ), dif_matrix, rows = n_subj)
+    #     names(emiss_cov_light) <- dep_labels
+    #     for(q in 1:n_dep){
+    #         if(nx[1 + q] > 1){
+    #             colnames(emiss_cov_light[[q]]) <-  paste( paste("cov", rep(1 : (nx[1+q] - 1),each = nx[1+q]-1), "_", sep = ""), "emiss", rep(2:q_emiss[q], m * (nx[1 + q] - 1)), "_S", rep(1:m, each = (q_emiss[q] - 1) * (nx[1 + q] - 1)), sep = "")
+    #         }
+    #     }
+    # }
+
+    # Initialize output objects
+    gamma_int_var <- matrix(, nrow = J, ncol = ((m-1) * m))
+    colnames(gamma_int_var) <- paste("int_S", rep(1:m, each = m-1), "toS", rep(2:m, m), sep = "")
+
+    gamma_prob_var <- matrix(, nrow = J, ncol = m * m)
+    colnames(gamma_prob_var) <- paste("S", rep(1:m, each = m), "toS", rep(1:m, m), sep = "")
+
+    emiss_int_var <- lapply((q_emiss-1) * m, dif_matrix, rows = J)
+    emiss_prob_var <- lapply(q_emiss * m, dif_matrix, rows = J)
+    names(emiss_int_var) <- dep_labels
+    names(emiss_prob_var) <- dep_labels
+    for(q in 1:n_dep){
+        colnames(emiss_int_var[[q]]) <-  paste("int_Emiss", rep(2:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q] - 1), sep = "")
+        colnames(emiss_prob_var[[q]]) <- PD_emiss_names
+    }
+
+    llk_bar <- matrix(, nrow = J, ncol = 1)
+
+    #------------------------------------
 
 
     # Start analysis --------------------------------------------
@@ -292,8 +354,11 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
             forward				<- cat_mult_fw_r_to_cpp(x = subj_data[[s]]$y, m = m, emiss = emiss[[s]], gamma = gamma[[s]], n_dep = n_dep, delta=NULL)
             alpha         <- forward[[1]]
             c             <- max(forward[[2]][, subj_data[[s]]$n])
-            llk           <- c + log(sum(exp(forward[[2]][, subj_data[[s]]$n] - c)))
-            PD_subj[[s]][iter, sum(m * q_emiss) + m * m + 1] <- llk
+            llk           <- PD_light[s, sum(m * q_emiss) + m * m + 1] <- c + log(sum(exp(forward[[2]][, subj_data[[s]]$n] - c)))
+
+            if(subj_data){
+                PD_subj[[s]][iter, sum(m * q_emiss) + m * m + 1] <- llk
+            }
 
             # Using the forward probabilites, sample the state sequence in a backward manner.
             # In addition, saves state transitions in trans, and conditional observations within states in cond_y
@@ -386,7 +451,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
             }
 
 
-            # Sample pouplaton values for gamma and conditional probabilities using Gibbs sampler -----------
+            # Sample populaton values for gamma and conditional probabilities using Gibbs sampler -----------
             # gamma_mu0_n and gamma_mu_int_bar are matrices, with the number of rows equal to the number of covariates, and ncol equal to number of intercepts estimated
             gamma_mu0_n           <- solve(t(xx[[1]]) %*% xx[[1]] + gamma_K0)  %*% (t(xx[[1]]) %*% gamma_c_int[[i]] + gamma_K0 %*% gamma_mu0[[i]])
             gamma_V_n             <- gamma_V + t(gamma_c_int[[i]] - xx[[1]] %*% gamma_mu0_n) %*% (gamma_c_int[[i]] - xx[[1]] %*% gamma_mu0_n) + t(gamma_mu0_n - gamma_mu0[[i]]) %*% gamma_K0 %*% (gamma_mu0_n - gamma_mu0[[i]])
@@ -408,19 +473,31 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
             for (s in 1:n_subj){
                 gamma_candcov_comb 			<- chol2inv(chol(subj_data[[s]]$gamma_mhess[(1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1)), ] + chol2inv(chol(gamma_V_int[[i]]))))
                 gamma_RWout					    <- mnl_RW_once(int1 = gamma_c_int[[i]][s,], Obs = trans[[s]][[i]], n_cat = m, mu_int_bar1 = c(t(gamma_mu_int_bar[[i]]) %*% xx[[1]][s,]), V_int1 = gamma_V_int[[i]], scalar = gamma_scalar, candcov1 = gamma_candcov_comb)
-                gamma[[s]][i,]  	<- PD_subj[[s]][iter, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
+                gamma[[s]][i,]  	<- PD_light[s, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
+                if(subj_data){
+                    PD_subj[[s]][iter, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
+                }
                 gamma_naccept[s, i]			<- gamma_naccept[s, i] + gamma_RWout$accept
-                gamma_c_int[[i]][s,]		<- gamma_RWout$draw_int
-                gamma_int_subj[[s]][iter, (1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1))] <- gamma_c_int[[i]][s,]
+                gamma_c_int[[i]][s,]		<- gamma_int_light[s, (1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1))] <- gamma_RWout$draw_int
+
+                if(subj_data){
+                    gamma_int_subj[[s]][iter, (1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1))] <- gamma_c_int[[i]][s,]
+                }
 
                 start <- c(0, q_emiss * m)
                 for(q in 1:n_dep){
                     emiss_candcov_comb		     <- chol2inv(chol(subj_data[[s]]$emiss_mhess[[q]][(1 + (i - 1) * (q_emiss[q] - 1)):((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1)), ] + chol2inv(chol(emiss_V_int[[i]][[q]]))))
                     emiss_RWout				       <- mnl_RW_once(int1 = emiss_c_int[[i]][[q]][s,], Obs = cond_y[[s]][[i]][[q]], n_cat = q_emiss[q], mu_int_bar1 = c(t(emiss_mu_int_bar[[i]][[q]]) %*% xx[[1 + q]][s,]), V_int1 = emiss_V_int[[i]][[q]], scalar = emiss_scalar[[q]], candcov1 = emiss_candcov_comb)
-                    emiss[[s]][[q]][i,]		   <- PD_subj[[s]][iter, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
+                    emiss[[s]][[q]][i,]		   <- PD_light[s, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
+                    if(subj_data){
+                        PD_subj[[s]][iter, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
+                    }
                     emiss_naccept[[q]][s, i]	 <- emiss_naccept[[q]][s, i] + emiss_RWout$accept
-                    emiss_c_int[[i]][[q]][s,] <- emiss_RWout$draw_int
-                    emiss_int_subj[[s]][[q]][iter, (1 + (i - 1) * (q_emiss[q] - 1)) : ((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1))]	<- emiss_c_int[[i]][[q]][s,]
+                    emiss_c_int[[i]][[q]][s,] <- emiss_int_light[[q]][s, (1 + (i - 1) * (q_emiss[q] - 1)) : ((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1))] <- emiss_RWout$draw_int
+
+                    if(subj_data){
+                        emiss_int_subj[[s]][[q]][iter, (1 + (i - 1) * (q_emiss[q] - 1)) : ((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1))]	<- emiss_c_int[[i]][[q]][s,]
+                    }
                 }
 
                 if(i == m){
@@ -449,6 +526,19 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
             emiss_prob_bar[[q]][iter,]	<- as.vector(unlist(sapply(emiss_mu_prob_bar, "[[", q)))
             emiss_V_int_bar[[q]][iter,] <- unlist(lapply(emiss_V_int, function(e) as.vector(t(e[[q]]))))
         }
+
+        # Save "light" objects
+        gamma_int_var[iter, ] <- apply(gamma_int_light, 2, var)
+        gamma_prob_var[iter, ] <- apply(PD_light[,paste0("S", rep(1:m, each = m), "toS", rep(1:m, m))],2,var)
+
+        for(q in 1:n_dep) {
+            emiss_int_var[[q]][iter, ] <- apply(emiss_int_light, 2, var)
+            emiss_prob_var[[q]][iter, ] <- apply(PD_light[,paste("q", q, "_emiss", rep(1:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q]), sep = "")], 2, var)
+        }
+
+        llk_bar[iter,] <- apply(PD_light[,sum(m * q_emiss) + m * m + 1], 2, mean)
+
+        # Update counter
         if(show_progress == TRUE){
             utils::setTxtProgressBar(pb, iter)
         }
@@ -460,32 +550,28 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
     # End of function, return output values --------
     ctime = proc.time()[3]
     # message(paste("Total time elapsed (hh:mm:ss):", hms(ctime-itime)))
+
+    out <- list(input = list(m = m, n_dep = n_dep, q_emiss = q_emiss, J = J,
+                             burn_in = burn_in, n_subj = n_subj, n_vary = n_vary, dep_labels = dep_labels),
+                gamma_int_bar = gamma_int_bar, gamma_int_var = gamma_int_var,
+                gamma_V_int_bar = gamma_V_int_bar,
+                gamma_cov_bar = gamma_cov_bar,
+                emiss_int_bar = emiss_int_bar, emiss_int_var = emiss_int_var,
+                emiss_V_int_bar = emiss_V_int_bar,
+                emiss_cov_bar = emiss_cov_bar,
+                gamma_prob_bar = gamma_prob_bar, gamma_prob_var = gamma_prob_var,
+                emiss_prob_bar = emiss_prob_bar, emiss_prob_var = emiss_prob_var,
+                gamma_naccept = gamma_naccept, emiss_naccept = emiss_naccept,
+                llk_bar = llk_bar)
+
     if(return_path == TRUE){
-        out <- list(input = list(m = m, n_dep = n_dep, q_emiss = q_emiss, J = J,
-                                 burn_in = burn_in, n_subj = n_subj, n_vary = n_vary, dep_labels = dep_labels),
-                    PD_subj = PD_subj, gamma_int_subj = gamma_int_subj, emiss_int_subj = emiss_int_subj,
-                    gamma_int_bar = gamma_int_bar,
-                    gamma_V_int_bar = gamma_V_int_bar,
-                    gamma_cov_bar = gamma_cov_bar,
-                    emiss_int_bar = emiss_int_bar,
-                    emiss_V_int_bar = emiss_V_int_bar,
-                    emiss_cov_bar = emiss_cov_bar,
-                    gamma_prob_bar = gamma_prob_bar, emiss_prob_bar = emiss_prob_bar,
-                    gamma_naccept = gamma_naccept, emiss_naccept = emiss_naccept,
-                    sample_path = sample_path)
-    } else {
-        out <- list(input = list(m = m, n_dep = n_dep, q_emiss = q_emiss, J = J,
-                                 burn_in = burn_in, n_subj = n_subj, n_vary = n_vary, dep_labels = dep_labels),
-                    PD_subj = PD_subj, gamma_int_subj = gamma_int_subj, emiss_int_subj = emiss_int_subj,
-                    gamma_int_bar = gamma_int_bar,
-                    gamma_V_int_bar = gamma_V_int_bar,
-                    gamma_cov_bar = gamma_cov_bar,
-                    emiss_int_bar = emiss_int_bar,
-                    emiss_V_int_bar = emiss_V_int_bar,
-                    emiss_cov_bar = emiss_cov_bar,
-                    gamma_prob_bar = gamma_prob_bar, emiss_prob_bar = emiss_prob_bar,
-                    gamma_naccept = gamma_naccept, emiss_naccept = emiss_naccept)
+        out <- c(out,list(sample_path = sample_path))
     }
+
+    if(subj_data){
+        out <- c(out, list(PD_subj = PD_subj, gamma_int_subj = gamma_int_subj, emiss_int_subj = emiss_int_subj))
+    }
+
     class(out) <- append(class(out), "mHMM")
     return(out)
     }
