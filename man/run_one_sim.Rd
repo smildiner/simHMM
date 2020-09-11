@@ -4,7 +4,7 @@
 \alias{run_one_sim}
 \title{Run one simulation}
 \usage{
-run_one_sim(uid, seed, light = FALSE, subj_data = TRUE)
+run_one_sim(uid, seed, light = FALSE, save_subj_data = TRUE)
 }
 \description{
 Run one simulation
