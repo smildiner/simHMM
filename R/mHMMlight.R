@@ -18,7 +18,7 @@
 
 mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALSE, print_iter, show_progress = TRUE,
                      gamma_hyp_prior = NULL, emiss_hyp_prior = NULL, gamma_sampler = NULL, emiss_sampler = NULL,
-                     subj_data = FALSE){
+                     save_subj_data = FALSE){
 
     if(!missing(print_iter)){
         warning("The argument print_iter is deprecated; please use show_progress instead to show the progress of the algorithm.")
@@ -207,7 +207,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
     PD[1, ((sum(m * q_emiss) + 1)) :((sum(m * q_emiss) + m * m))] <- unlist(sapply(start_val, t))[1:(m*m)]
     PD[1, 1:((sum(m * q_emiss)))] <- unlist(sapply(start_val, t))[(m*m + 1): (m*m + sum(m * q_emiss))]
 
-    if(subj_data){
+    if(save_subj_data){
         PD_subj				<- rep(list(PD), n_subj)
     }
 
@@ -267,7 +267,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
     }
 
     # Define object for subject specific posterior density (regression coefficients parameterization )
-    if(subj_data){
+    if(save_subj_data){
         gamma_int_subj			<- rep(list(gamma_int_bar), n_subj)
         emiss_int_subj			<- rep(list(emiss_int_bar), n_subj)
     }
@@ -356,7 +356,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
             c             <- max(forward[[2]][, subj_data[[s]]$n])
             llk           <- PD_light[s, sum(m * q_emiss) + m * m + 1] <- c + log(sum(exp(forward[[2]][, subj_data[[s]]$n] - c)))
 
-            if(subj_data){
+            if(save_subj_data){
                 PD_subj[[s]][iter, sum(m * q_emiss) + m * m + 1] <- llk
             }
 
@@ -474,13 +474,13 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
                 gamma_candcov_comb 			<- chol2inv(chol(subj_data[[s]]$gamma_mhess[(1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1)), ] + chol2inv(chol(gamma_V_int[[i]]))))
                 gamma_RWout					    <- mnl_RW_once(int1 = gamma_c_int[[i]][s,], Obs = trans[[s]][[i]], n_cat = m, mu_int_bar1 = c(t(gamma_mu_int_bar[[i]]) %*% xx[[1]][s,]), V_int1 = gamma_V_int[[i]], scalar = gamma_scalar, candcov1 = gamma_candcov_comb)
                 gamma[[s]][i,]  	<- PD_light[s, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
-                if(subj_data){
+                if(save_subj_data){
                     PD_subj[[s]][iter, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
                 }
                 gamma_naccept[s, i]			<- gamma_naccept[s, i] + gamma_RWout$accept
                 gamma_c_int[[i]][s,]		<- gamma_int_light[s, (1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1))] <- gamma_RWout$draw_int
 
-                if(subj_data){
+                if(save_subj_data){
                     gamma_int_subj[[s]][iter, (1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1))] <- gamma_c_int[[i]][s,]
                 }
 
@@ -489,13 +489,13 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
                     emiss_candcov_comb		     <- chol2inv(chol(subj_data[[s]]$emiss_mhess[[q]][(1 + (i - 1) * (q_emiss[q] - 1)):((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1)), ] + chol2inv(chol(emiss_V_int[[i]][[q]]))))
                     emiss_RWout				       <- mnl_RW_once(int1 = emiss_c_int[[i]][[q]][s,], Obs = cond_y[[s]][[i]][[q]], n_cat = q_emiss[q], mu_int_bar1 = c(t(emiss_mu_int_bar[[i]][[q]]) %*% xx[[1 + q]][s,]), V_int1 = emiss_V_int[[i]][[q]], scalar = emiss_scalar[[q]], candcov1 = emiss_candcov_comb)
                     emiss[[s]][[q]][i,]		   <- PD_light[s, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
-                    if(subj_data){
+                    if(save_subj_data){
                         PD_subj[[s]][iter, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
                     }
                     emiss_naccept[[q]][s, i]	 <- emiss_naccept[[q]][s, i] + emiss_RWout$accept
                     emiss_c_int[[i]][[q]][s,] <- emiss_int_light[[q]][s, (1 + (i - 1) * (q_emiss[q] - 1)) : ((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1))] <- emiss_RWout$draw_int
 
-                    if(subj_data){
+                    if(save_subj_data){
                         emiss_int_subj[[s]][[q]][iter, (1 + (i - 1) * (q_emiss[q] - 1)) : ((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1))]	<- emiss_c_int[[i]][[q]][s,]
                     }
                 }
@@ -568,7 +568,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
         out <- c(out,list(sample_path = sample_path))
     }
 
-    if(subj_data){
+    if(save_subj_data){
         out <- c(out, list(PD_subj = PD_subj, gamma_int_subj = gamma_int_subj, emiss_int_subj = emiss_int_subj))
     }
 

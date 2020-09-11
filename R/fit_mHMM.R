@@ -13,7 +13,7 @@ fit_mHMM <- function(m,
                      start_emiss = NULL,
                      data_sim,
                      light = FALSE,
-                     subj_data = FALSE) {
+                     save_subj_data = TRUE) {
 
     # Set starting values
     # gamma_start
@@ -55,7 +55,7 @@ fit_mHMM <- function(m,
                                 mcmc = list(J = iter, burn_in = burnin),
                                 return_path = FALSE,
                                 show_progress = FALSE,
-                                subj_data = subj_data)
+                                save_subj_data = save_subj_data)
     }
     out[["time"]] <- Sys.time() - ti
 

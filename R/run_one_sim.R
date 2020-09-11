@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim <- function(uid, seed, light = FALSE, subj_data = TRUE){
+run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE){
 
     exe_time <- system.time({
 
@@ -71,7 +71,7 @@ run_one_sim <- function(uid, seed, light = FALSE, subj_data = TRUE){
             # Fit mHMM with lower memory use
             light = light,
             # Save subject level results
-            subj_data = subj_data
+            save_subj_data = save_subj_data
         )
 
         # Add between subject variace to the output
