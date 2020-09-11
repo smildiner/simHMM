@@ -331,7 +331,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
     names(emiss_prob_var) <- dep_labels
     for(q in 1:n_dep){
         colnames(emiss_int_var[[q]]) <-  paste("int_Emiss", rep(2:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q] - 1), sep = "")
-        colnames(emiss_prob_var[[q]]) <- PD_emiss_names
+        colnames(emiss_prob_var[[q]]) <- paste("Emiss", rep(1:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q]), sep = "")
     }
 
     llk_bar <- matrix(, nrow = J, ncol = 1)
@@ -532,11 +532,11 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
         gamma_prob_var[iter, ] <- apply(PD_light[,paste0("S", rep(1:m, each = m), "toS", rep(1:m, m))],2,var)
 
         for(q in 1:n_dep) {
-            emiss_int_var[[q]][iter, ] <- apply(emiss_int_light, 2, var)
+            emiss_int_var[[q]][iter, ] <- apply(emiss_int_light[[q]], 2, var)
             emiss_prob_var[[q]][iter, ] <- apply(PD_light[,paste("q", q, "_emiss", rep(1:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q]), sep = "")], 2, var)
         }
 
-        llk_bar[iter,] <- apply(PD_light[,sum(m * q_emiss) + m * m + 1], 2, mean)
+        llk_bar[iter,] <- mean(PD_light[,sum(m * q_emiss) + m * m + 1])
 
         # Update counter
         if(show_progress == TRUE){
