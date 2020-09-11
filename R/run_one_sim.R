@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim <- function(uid, seed, subj_data = TRUE){
+run_one_sim <- function(uid, seed, light = FALSE, subj_data = TRUE){
 
     exe_time <- system.time({
 
@@ -67,11 +67,17 @@ run_one_sim <- function(uid, seed, subj_data = TRUE){
             # Starting values for the emission distributions
             start_emiss = NULL,
             # Simulated data
-            data_sim = sim_data
+            data_sim = sim_data,
+            # Fit mHMM with lower memory use
+            light = light,
+            # Save subject level results
+            subj_data = subj_data
         )
 
         # Add between subject variace to the output
-        model_output <- c(model_output, get_var_bar(model_output))
+        if(light == FALSE) {
+            model_output <- c(model_output, get_var_bar(model_output))
+        }
 
         # Get MAP estimates
         map_out <- MAP(model_output)

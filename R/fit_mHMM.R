@@ -11,7 +11,9 @@ fit_mHMM <- function(m,
                      burnin,
                      start_gamma = NULL,
                      start_emiss = NULL,
-                     data_sim) {
+                     data_sim,
+                     light = FALSE,
+                     subj_data = FALSE) {
 
     # Set starting values
     # gamma_start
@@ -37,13 +39,24 @@ fit_mHMM <- function(m,
 
     # Run the model
     ti <- Sys.time()
-    out <- simHMM::mHMMfast(s_data = data_sim$obs,
-                    gen = list(m = m, n_dep = n_dep, q_emiss = q_emiss),
-                    # xx = xx_vec,
-                    start_val = c(list(start_gamma), start_emiss),
-                    mcmc = list(J = iter, burn_in = burnin),
-                    return_path = FALSE,
-                    show_progress = FALSE)
+    if(light == FALSE){
+        out <- simHMM::mHMMfast(s_data = data_sim$obs,
+                                gen = list(m = m, n_dep = n_dep, q_emiss = q_emiss),
+                                # xx = xx_vec,
+                                start_val = c(list(start_gamma), start_emiss),
+                                mcmc = list(J = iter, burn_in = burnin),
+                                return_path = FALSE,
+                                show_progress = FALSE)
+    } else {
+        out <- simHMM::mHMMlight(s_data = data_sim$obs,
+                                gen = list(m = m, n_dep = n_dep, q_emiss = q_emiss),
+                                # xx = xx_vec,
+                                start_val = c(list(start_gamma), start_emiss),
+                                mcmc = list(J = iter, burn_in = burnin),
+                                return_path = FALSE,
+                                show_progress = FALSE,
+                                subj_data = subj_data)
+    }
     out[["time"]] <- Sys.time() - ti
 
     # Return model output

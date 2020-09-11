@@ -14,7 +14,9 @@ fit_mHMM(
   burnin,
   start_gamma = NULL,
   start_emiss = NULL,
-  data_sim
+  data_sim,
+  light = FALSE,
+  subj_data = FALSE
 )
 }
 \description{
