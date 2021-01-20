@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim <- function(uid, seed, light = FALSE, subj_data = TRUE){
+run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE){
 
     exe_time <- system.time({
 
@@ -71,7 +71,7 @@ run_one_sim <- function(uid, seed, light = FALSE, subj_data = TRUE){
             # Fit mHMM with lower memory use
             light = light,
             # Save subject level results
-            subj_data = subj_data
+            save_subj_data = save_subj_data
         )
 
         # Add between subject variace to the output
@@ -108,11 +108,11 @@ run_one_sim <- function(uid, seed, light = FALSE, subj_data = TRUE){
         complete_data <- list("sim_data" = sim_data,
              "output" = model_output)
 
-        if(subj_data == FALSE) {
-            complete_data[["output"]][["PD_subj"]] <- NULL
-            complete_data[["output"]][["gamma_int_subj"]] <- NULL
-            complete_data[["output"]][["emiss_int_subj"]] <- NULL
-        }
+        # if(save_subj_data == FALSE) {
+        #     complete_data[["output"]][["PD_subj"]] <- NULL
+        #     complete_data[["output"]][["gamma_int_subj"]] <- NULL
+        #     complete_data[["output"]][["emiss_int_subj"]] <- NULL
+        # }
 
         saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
         saveRDS(object = out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))

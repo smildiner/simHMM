@@ -17,7 +17,7 @@ mHMMlight(
   emiss_hyp_prior = NULL,
   gamma_sampler = NULL,
   emiss_sampler = NULL,
-  subj_data = FALSE
+  save_subj_data = FALSE
 )
 }
 \value{

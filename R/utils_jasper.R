@@ -114,7 +114,11 @@ MAP <- function(x) {
             next
         }
         # if numeric, compute MAP
-        if(mode(feelthebern[[param_idx]]) == "numeric") {
+        if (class(feelthebern[[param_idx]]) == "numeric") {
+            map_out[[param_idx]][["mean"]] <- unname(mean(feelthebern[[param_idx]]))
+            map_out[[param_idx]][["median"]] <- unname(median(feelthebern[[param_idx]]))
+            map_out[[param_idx]][["SE"]] <- unname(sd(feelthebern[[param_idx]]))
+        } else if(mode(feelthebern[[param_idx]]) == "numeric") {
             map_out[[param_idx]][["mean"]] <- unname(apply(feelthebern[[param_idx]], 2, mean))
             map_out[[param_idx]][["median"]] <- unname(apply(feelthebern[[param_idx]], 2, median))
             map_out[[param_idx]][["SE"]] <- unname(apply(feelthebern[[param_idx]], 2, sd))
@@ -197,7 +201,10 @@ get_cci <- function(x) {
             next
         }
         # if numeric, compute MAP
-        if(mode(feelthebern[[param_idx]]) == "numeric") {
+        if (class(feelthebern[[param_idx]]) == "numeric") {
+            cci_out[[param_idx]][["CCI_95"]] <- unname(as.vector(quantile(feelthebern[[param_idx]], c(0.0275,0.975))))
+            cci_out[[param_idx]][["CCI_99"]] <- unname(as.vector(quantile(feelthebern[[param_idx]], c(0.005, 0.995))))
+        } else if(mode(feelthebern[[param_idx]]) == "numeric") {
             cci_out[[param_idx]][["CCI_95"]] <- unname(as.vector(credible_interval(feelthebern[[param_idx]], "0.95")))
             cci_out[[param_idx]][["CCI_99"]] <- unname(as.vector(credible_interval(feelthebern[[param_idx]], "0.99")))
         } else {

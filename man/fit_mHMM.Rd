@@ -16,7 +16,7 @@ fit_mHMM(
   start_emiss = NULL,
   data_sim,
   light = FALSE,
-  subj_data = FALSE
+  save_subj_data = TRUE
 )
 }
 \description{
