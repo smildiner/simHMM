@@ -6,9 +6,16 @@
 #'
 #' @export
 
-run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE){
+run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE, surf = FALSE){
 
     exe_time <- system.time({
+
+        if(surf == TRUE){
+            RNGkind("L'Ecuyer-CMRG")
+            set.seed(42)
+            seeds_log <- readRDS("inputs/seeds_log.rds")
+            .Random.seed <- as.matrix(seeds_log[seeds_log$uid==uid,-1])
+        }
 
         # Store the current state of the stream of RNG
         seed_state <- list(state = .Random.seed,
