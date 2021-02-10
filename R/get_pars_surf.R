@@ -2,19 +2,21 @@
 #'
 #' @export
 
-get_pars <- function(uid, surf = FALSE) {
+get_pars_surf <- function(pars) {
 
-    # Check that log file exists
+    # Legend
+    #   pars[1] = sample_size
+    #   pars[2] = n_t
+    #   pars[3] = n_dep
+    #   pars[4] = noisiness
+    #   pars[5] = overlapping
+    #   pars[6] = iter
+    #   pars[7] = burnin
+    #   pars[8] = repetitions
+    #   pars[9] = scenario_uid
+    #   pars[10] = uid
+    #   pars[11:17] = .Random.seed
 
-    # Load log
-    if(surf == TRUE){
-        scenario <- readRDS("scenarios_log.rds")
-    } else {
-        scenario <- readRDS("inputs/scenarios_log.rds")
-    }
-
-    # Select the incumbent scenario
-    scenario <- scenario[which(scenario[["uid"]] == uid),]
 
     # Specify the correct gamma, emiss and eps_str
     gamma_sim <- matrix(c(0.96, 0.02, 0.02,
@@ -214,30 +216,30 @@ get_pars <- function(uid, surf = FALSE) {
                                            -3/2*1/1.5, 1/1.5, -3/2*1/1.5, 1/1.5, 1/1.5), nrow = 3, ncol = 5, byrow = T)))
 
     # Set the correct ones
-    emiss_sim <- emiss_sim[[scenario[["overlapping"]]]]
-    eps_str <- eps_str[[scenario[["overlapping"]]]]
+    emiss_sim <- emiss_sim[[scenario[[pars[5]]]]]
+    eps_str <- eps_str[[scenario[[pars[5]]]]]
 
     # Set emission distribution with noisiness
-    eps <- scenario[["noisiness"]]
+    eps <- scenario[[pars[4]]]
     emiss_sim <- lapply(seq_along(emiss_sim),function(e, emiss_sim, eps_str, eps) {emiss_sim[[e]] + eps_str[[e]]*eps}, emiss_sim, eps_str, eps)
 
     # Return model parameters
-    return(list(sample_size  = scenario[["sample_size"]],
-                n_t          = scenario[["n_t"]],
-                m            = scenario[["m"]],
-                n_dep        = scenario[["n_dep"]],
-                q_emiss      = rep(scenario[["q_emiss"]], scenario[["n_dep"]]),
-                gamma_var    = scenario[["gamma_var"]],
-                emiss_var    = rep(scenario[["emiss_var"]], scenario[["n_dep"]]),
-                noisiness    = scenario[["noisiness"]],
-                overlapping  = scenario[["overlapping"]],
-                iter         = scenario[["iter"]],
-                burnin       = scenario[["burnin"]],
-                repetitions  = scenario[["repetitions"]],
-                scenario_uid = scenario[["scenario_uid"]],
-                uid          = scenario[["uid"]],
-                save_all     = scenario[["save_all"]],
+    return(list(sample_size  = pars[1],
+                n_t          = pars[2],
+                m            = 3,
+                n_dep        = pars[3],
+                q_emiss      = rep(5, pars[3]),
+                gamma_var    = 1,
+                emiss_var    = rep(1, pars[3]),
+                noisiness    = pars[4],
+                overlapping  = pars[5],
+                iter         = pars[6],
+                burnin       = pars[7],
+                repetitions  = pars[8],
+                scenario_uid = pars[9],
+                uid          = pars[10],
+                save_all     = FALSE,
                 gamma_sim    = gamma_sim,
-                emiss_sim    = emiss_sim[1:scenario[["n_dep"]]]))
+                emiss_sim    = emiss_sim[1:pars[3]]))
 
 }

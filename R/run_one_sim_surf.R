@@ -1,4 +1,4 @@
-#' Run one simulation
+#' Run one simulation in SurfSara Lisa
 #'
 #' @importFrom dplyr select
 #' @importFrom magrittr %>%
@@ -6,26 +6,38 @@
 #'
 #' @export
 
-run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE){
+run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
+
+    # Legend
+    #   pars[1] = sample_size
+    #   pars[2] = n_t
+    #   pars[3] = n_dep
+    #   pars[4] = noisiness
+    #   pars[5] = overlapping
+    #   pars[6] = iter
+    #   pars[7] = burnin
+    #   pars[8] = repetitions
+    #   pars[9] = scenario_uid
+    #   pars[10] = uid
+    #   pars[11:17] = .Random.seed
 
     exe_time <- system.time({
 
-        # if(surf == TRUE){
-        #     RNGkind("L'Ecuyer-CMRG")
-        #     set.seed(42)
-        #     seeds_log <- readRDS("inputs/seeds_log.rds")
-        #     .Random.seed <- as.matrix(seeds_log[seeds_log$uid==uid,-1])
-        # }
+        # Put in the right format
+        pars[9] <- deparse(substitute(pars[9]))
+        pars[10] <- deparse(substitute(pars[10]))
+
+        # Set L'Ecuyer random seed
+        RNGkind("L'Ecuyer-CMRG")
+        set.seed(42)
+        .Random.seed <- matrix(pars[11:17], nrow = 1)
 
         # Store the current state of the stream of RNG
         seed_state <- list(state = .Random.seed,
                            kind = RNGkind())
 
         # Get simulation parameters
-        model_pars <- get_pars(uid = uid, surf = surf)
-
-        # # Return model parameters
-        #             repetitions = scenario[["repetitions"]],
+        model_pars <- get_pars_surf(pars)
 
         # Simulate data
         sim_data <- sim_mHMM(
@@ -102,31 +114,7 @@ run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE){
                 map = map_out,
                 cci = cci_out)
 
-    # Get evaluation metrics: not for now
-
     # Save results: add the actual outcomes
-    if (!("outputs" %in% dir())) {
-        dir.create("outputs")
-        dir.create("outputs/complete_results")
-        dir.create("outputs/results")
-    }
-
-    if (model_pars[["save_all"]]) {
-        complete_data <- list("sim_data" = sim_data,
-             "output" = model_output)
-
-        # if(save_subj_data == FALSE) {
-        #     complete_data[["output"]][["PD_subj"]] <- NULL
-        #     complete_data[["output"]][["gamma_int_subj"]] <- NULL
-        #     complete_data[["output"]][["emiss_int_subj"]] <- NULL
-        # }
-
-        saveRDS(object = complete_data, file = paste0("outputs/complete_results/",model_pars[["uid"]],".rds"))
-        saveRDS(object = out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
-    } else {
-        saveRDS(object = out, file = paste0("outputs/results/",model_pars[["uid"]],".rds"))
-    }
-
-    # return(list(pars = model_pars, data = sim_data, output = model_output))
+    saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))
 
 }
