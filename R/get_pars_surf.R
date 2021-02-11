@@ -216,8 +216,8 @@ get_pars_surf <- function(pars) {
                                            -3/2*1/1.5, 1/1.5, -3/2*1/1.5, 1/1.5, 1/1.5), nrow = 3, ncol = 5, byrow = T)))
 
     # Set the correct ones
-    emiss_sim <- emiss_sim[[scenario[[as.numeric(pars[5])]]]]
-    eps_str <- eps_str[[scenario[[as.numeric(pars[5])]]]]
+    emiss_sim <- emiss_sim[[scenario[[as.character(pars[5])]]]]
+    eps_str <- eps_str[[scenario[[as.character(pars[5])]]]]
 
     # Set emission distribution with noisiness
     eps <- scenario[[as.numeric(pars[4])]]
@@ -232,7 +232,7 @@ get_pars_surf <- function(pars) {
                 gamma_var    = 1,
                 emiss_var    = rep(1, as.numeric(pars[3])),
                 noisiness    = as.numeric(pars[4]),
-                overlapping  = as.numeric(pars[5]),
+                overlapping  = as.character(pars[5]),
                 iter         = as.numeric(pars[6]),
                 burnin       = as.numeric(pars[7]),
                 repetitions  = as.numeric(pars[8]),
