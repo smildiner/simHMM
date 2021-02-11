@@ -216,11 +216,11 @@ get_pars_surf <- function(pars) {
                                            -3/2*1/1.5, 1/1.5, -3/2*1/1.5, 1/1.5, 1/1.5), nrow = 3, ncol = 5, byrow = T)))
 
     # Set the correct ones
-    emiss_sim <- emiss_sim[[scenario[[pars[5]]]]]
-    eps_str <- eps_str[[scenario[[pars[5]]]]]
+    emiss_sim <- emiss_sim[[scenario[[as.numeric(pars[5])]]]]
+    eps_str <- eps_str[[scenario[[as.numeric(pars[5])]]]]
 
     # Set emission distribution with noisiness
-    eps <- scenario[[pars[4]]]
+    eps <- scenario[[as.numeric(pars[4])]]
     emiss_sim <- lapply(seq_along(emiss_sim),function(e, emiss_sim, eps_str, eps) {emiss_sim[[e]] + eps_str[[e]]*eps}, emiss_sim, eps_str, eps)
 
     # Return model parameters
