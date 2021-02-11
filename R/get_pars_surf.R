@@ -224,22 +224,22 @@ get_pars_surf <- function(pars) {
     emiss_sim <- lapply(seq_along(emiss_sim),function(e, emiss_sim, eps_str, eps) {emiss_sim[[e]] + eps_str[[e]]*eps}, emiss_sim, eps_str, eps)
 
     # Return model parameters
-    return(list(sample_size  = pars[1],
-                n_t          = pars[2],
+    return(list(sample_size  = as.numeric(pars[1]),
+                n_t          = as.numeric(pars[2]),
                 m            = 3,
-                n_dep        = pars[3],
-                q_emiss      = rep(5, pars[3]),
+                n_dep        = as.numeric(pars[3]),
+                q_emiss      = rep(5, as.numeric(pars[3])),
                 gamma_var    = 1,
-                emiss_var    = rep(1, pars[3]),
-                noisiness    = pars[4],
-                overlapping  = pars[5],
-                iter         = pars[6],
-                burnin       = pars[7],
-                repetitions  = pars[8],
+                emiss_var    = rep(1, as.numeric(pars[3])),
+                noisiness    = as.numeric(pars[4]),
+                overlapping  = as.numeric(pars[5]),
+                iter         = as.numeric(pars[6]),
+                burnin       = as.numeric(pars[7]),
+                repetitions  = as.numeric(pars[8]),
                 scenario_uid = pars[9],
                 uid          = pars[10],
                 save_all     = FALSE,
                 gamma_sim    = gamma_sim,
-                emiss_sim    = emiss_sim[1:pars[3]]))
+                emiss_sim    = emiss_sim[1:as.numeric(pars[3])]))
 
 }
