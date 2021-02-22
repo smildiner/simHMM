@@ -24,8 +24,8 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
     exe_time <- system.time({
 
         # Put in the right format
-        pars[9] <- deparse(substitute(pars[9]))
-        pars[10] <- deparse(substitute(pars[10]))
+        pars[9] <- pars[9]
+        pars[10] <- pars[10]
 
         # Set L'Ecuyer random seed
         RNGkind("L'Ecuyer-CMRG")
@@ -93,7 +93,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
             save_subj_data = save_subj_data
         )
 
-        # Add between subject variace to the output
+        # Add between subject variance to the output
         if(light == FALSE) {
             model_output <- c(model_output, get_var_bar(model_output))
         }
