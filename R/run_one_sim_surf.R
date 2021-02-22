@@ -115,6 +115,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
                 cci = cci_out)
 
     # Save results: add the actual outcomes
-    saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))
+    # saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))
+    return(out)
 
 }
