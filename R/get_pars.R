@@ -2,16 +2,17 @@
 #'
 #' @export
 
-get_pars <- function(uid, surf = FALSE) {
+get_pars <- function(uid) {
 
     # Check that log file exists
 
     # Load log
-    if(surf == TRUE){
-        scenario <- readRDS("scenarios_log.rds")
-    } else {
-        scenario <- readRDS("inputs/scenarios_log.rds")
-    }
+    scenario <- readRDS("inputs/scenarios_log.rds")
+    # if(surf == TRUE){
+    #     scenario <- readRDS("scenarios_log.rds")
+    # } else {
+    #     scenario <- readRDS("inputs/scenarios_log.rds")
+    # }
 
     # Select the incumbent scenario
     scenario <- scenario[which(scenario[["uid"]] == uid),]
