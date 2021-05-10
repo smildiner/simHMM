@@ -30,7 +30,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
         # Set L'Ecuyer random seed
         RNGkind("L'Ecuyer-CMRG")
         set.seed(42)
-        .Random.seed <- as.integer(matrix(as.numeric(pars[11:17]), nrow = 1))
+        .Random.seed <<- as.integer(matrix(as.numeric(pars[11:17]), nrow = 1))
 
         # Store the current state of the stream of RNG
         seed_state <- list(state = .Random.seed,
