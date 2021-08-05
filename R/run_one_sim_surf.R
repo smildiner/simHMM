@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
+run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE){
 
     # Legend
     #   pars[1] = sample_size
@@ -37,7 +37,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
                            kind = RNGkind())
 
         # Get simulation parameters
-        model_pars <- get_pars_surf(pars)
+        model_pars <- get_pars_surf(pars, baseline)
 
         # Simulate data
         sim_data <- sim_mHMM(

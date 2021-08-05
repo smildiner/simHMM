@@ -2,7 +2,7 @@
 #'
 #' @export
 
-get_pars_surf <- function(pars) {
+get_pars_surf <- function(pars, baseline) {
 
     # Legend
     #   pars[1] = sample_size
@@ -19,9 +19,15 @@ get_pars_surf <- function(pars) {
 
 
     # Specify the correct gamma, emiss and eps_str
-    gamma_sim <- matrix(c(0.96, 0.02, 0.02,
-                          0.03, 0.94, 0.03,
-                          0.04, 0.04, 0.92), ncol = 3, byrow = TRUE)
+    if(baseline == TRUE) {
+        gamma_sim <- matrix(c(0.8, 0.1, 0.1,
+                              0.1, 0.7, 0.2,
+                              0.15, 0.25, 0.6), ncol = 3, byrow = TRUE)
+    } else {
+        gamma_sim <- matrix(c(0.96, 0.02, 0.02,
+                              0.03, 0.94, 0.03,
+                              0.04, 0.04, 0.92), ncol = 3, byrow = TRUE)
+    }
 
     emiss_sim <- list("low" = list(matrix(c(0.96, 0.01, 0.01, 0.01, 0.01,
                                             0.02, 0.47, 0.47, 0.02, 0.02,

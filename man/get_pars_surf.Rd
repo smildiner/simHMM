@@ -4,7 +4,7 @@
 \alias{get_pars_surf}
 \title{Load simulation parameters}
 \usage{
-get_pars_surf(pars)
+get_pars_surf(pars, baseline)
 }
 \description{
 Load simulation parameters
