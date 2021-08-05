@@ -22,7 +22,7 @@ run_one_sim <- function(uid, seed, light = FALSE, save_subj_data = TRUE){
                            kind = RNGkind())
 
         # Get simulation parameters
-        model_pars <- get_pars(uid = uid, surf = surf)
+        model_pars <- get_pars(uid = uid)
 
         # # Return model parameters
         #             repetitions = scenario[["repetitions"]],

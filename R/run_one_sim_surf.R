@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
+run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE){
 
     # Legend
     #   pars[1] = sample_size
@@ -24,20 +24,20 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
     exe_time <- system.time({
 
         # Put in the right format
-        pars[9] <- deparse(substitute(pars[9]))
-        pars[10] <- deparse(substitute(pars[10]))
+        pars[9] <- pars[9]
+        pars[10] <- pars[10]
 
         # Set L'Ecuyer random seed
         RNGkind("L'Ecuyer-CMRG")
         set.seed(42)
-        .Random.seed <- matrix(as.numeric(pars[11:17]), nrow = 1)
+        .Random.seed <<- as.integer(matrix(as.numeric(pars[11:17]), nrow = 1))
 
         # Store the current state of the stream of RNG
         seed_state <- list(state = .Random.seed,
                            kind = RNGkind())
 
         # Get simulation parameters
-        model_pars <- get_pars_surf(pars)
+        model_pars <- get_pars_surf(pars, baseline)
 
         # Simulate data
         sim_data <- sim_mHMM(
@@ -93,7 +93,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
             save_subj_data = save_subj_data
         )
 
-        # Add between subject variace to the output
+        # Add between subject variance to the output
         if(light == FALSE) {
             model_output <- c(model_output, get_var_bar(model_output))
         }
@@ -115,6 +115,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE){
                 cci = cci_out)
 
     # Save results: add the actual outcomes
-    saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))
+    # saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))
+    return(out)
 
 }

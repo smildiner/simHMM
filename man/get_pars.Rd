@@ -4,7 +4,7 @@
 \alias{get_pars}
 \title{Load simulation parameters}
 \usage{
-get_pars(uid, surf = FALSE)
+get_pars(uid)
 }
 \description{
 Load simulation parameters

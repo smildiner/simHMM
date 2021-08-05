@@ -4,7 +4,7 @@
 \alias{run_one_sim_surf}
 \title{Run one simulation in SurfSara Lisa}
 \usage{
-run_one_sim_surf(pars, light = FALSE, save_subj_data = TRUE)
+run_one_sim_surf(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE)
 }
 \description{
 Run one simulation in SurfSara Lisa

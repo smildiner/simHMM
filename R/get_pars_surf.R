@@ -2,7 +2,7 @@
 #'
 #' @export
 
-get_pars_surf <- function(pars) {
+get_pars_surf <- function(pars, baseline) {
 
     # Legend
     #   pars[1] = sample_size
@@ -19,9 +19,15 @@ get_pars_surf <- function(pars) {
 
 
     # Specify the correct gamma, emiss and eps_str
-    gamma_sim <- matrix(c(0.96, 0.02, 0.02,
-                          0.03, 0.94, 0.03,
-                          0.04, 0.04, 0.92), ncol = 3, byrow = TRUE)
+    if(baseline == TRUE) {
+        gamma_sim <- matrix(c(0.8, 0.1, 0.1,
+                              0.1, 0.7, 0.2,
+                              0.15, 0.25, 0.6), ncol = 3, byrow = TRUE)
+    } else {
+        gamma_sim <- matrix(c(0.96, 0.02, 0.02,
+                              0.03, 0.94, 0.03,
+                              0.04, 0.04, 0.92), ncol = 3, byrow = TRUE)
+    }
 
     emiss_sim <- list("low" = list(matrix(c(0.96, 0.01, 0.01, 0.01, 0.01,
                                             0.02, 0.47, 0.47, 0.02, 0.02,
@@ -216,11 +222,11 @@ get_pars_surf <- function(pars) {
                                            -3/2*1/1.5, 1/1.5, -3/2*1/1.5, 1/1.5, 1/1.5), nrow = 3, ncol = 5, byrow = T)))
 
     # Set the correct ones
-    emiss_sim <- emiss_sim[[scenario[[as.numeric(pars[5])]]]]
-    eps_str <- eps_str[[scenario[[as.numeric(pars[5])]]]]
+    emiss_sim <- emiss_sim[[as.character(pars[5])]]
+    eps_str <- eps_str[[as.character(pars[5])]]
 
     # Set emission distribution with noisiness
-    eps <- scenario[[as.numeric(pars[4])]]
+    eps <- as.numeric(pars[4])
     emiss_sim <- lapply(seq_along(emiss_sim),function(e, emiss_sim, eps_str, eps) {emiss_sim[[e]] + eps_str[[e]]*eps}, emiss_sim, eps_str, eps)
 
     # Return model parameters
@@ -232,7 +238,7 @@ get_pars_surf <- function(pars) {
                 gamma_var    = 1,
                 emiss_var    = rep(1, as.numeric(pars[3])),
                 noisiness    = as.numeric(pars[4]),
-                overlapping  = as.numeric(pars[5]),
+                overlapping  = as.character(pars[5]),
                 iter         = as.numeric(pars[6]),
                 burnin       = as.numeric(pars[7]),
                 repetitions  = as.numeric(pars[8]),
