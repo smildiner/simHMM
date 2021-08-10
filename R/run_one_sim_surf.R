@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE){
+run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE){
 
     # Legend
     #   pars[1] = sample_size
@@ -19,7 +19,8 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     #   pars[8] = repetitions
     #   pars[9] = scenario_uid
     #   pars[10] = uid
-    #   pars[11:17] = .Random.seed
+    #   pars[11:17] = .Random.seed for simulation
+    #   pars[18:24] = .Random.seed for convergence run
 
     exe_time <- system.time({
 
@@ -65,6 +66,17 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
             return_ind_par = TRUE
         )
 
+        if(convergence == TRUE){
+            # Set L'Ecuyer random seed
+            RNGkind("L'Ecuyer-CMRG")
+            set.seed(42)
+            .Random.seed <<- as.integer(matrix(as.numeric(pars[18:24]), nrow = 1))
+
+            # Store the current state of the stream of RNG
+            seed_convergence <- list(state = .Random.seed,
+                               kind = RNGkind())
+        }
+
         # Fit mHMMbayes model
         model_output <- fit_mHMM(
             # Number of states
@@ -106,7 +118,8 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     })
 
     # Add scenario and iteration info
-    out <- list(seed = seed_state,
+    out <- list(seed = list("data" = seed_state, "convergence" = seed_convergence),
+                # seed = seed_state,
                 scenario_uid = model_pars[["scenario_uid"]],
                 uid = model_pars[["uid"]],
                 time = exe_time[[3]],
