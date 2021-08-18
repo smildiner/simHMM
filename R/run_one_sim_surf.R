@@ -21,6 +21,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     #   pars[10] = uid
     #   pars[11:17] = .Random.seed for simulation
     #   pars[18:24] = .Random.seed for convergence run
+    #   pars[25] = chain
 
     exe_time <- system.time({
 
@@ -127,7 +128,8 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
                     time = exe_time[[3]],
                     truth = sim_data,
                     map = map_out,
-                    cci = cci_out)
+                    cci = cci_out,
+                    output = model_output)
     } else {
         out <- list(seed = seed_state,
                     # seed = seed_state,
