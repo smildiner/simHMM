@@ -20,8 +20,8 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     #   pars[9] = scenario_uid
     #   pars[10] = uid
     #   pars[11:17] = .Random.seed for simulation
-    #   pars[18:24] = .Random.seed for convergence run
-    #   pars[25] = chain
+    #   pars[18] = chain
+    #   pars[19:25] = .Random.seed for convergence run
 
     exe_time <- system.time({
 
@@ -71,7 +71,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
             # Set L'Ecuyer random seed
             RNGkind("L'Ecuyer-CMRG")
             set.seed(42)
-            .Random.seed <<- as.integer(matrix(as.numeric(pars[18:24]), nrow = 1))
+            .Random.seed <<- as.integer(matrix(as.numeric(pars[19:25]), nrow = 1))
 
             # Store the current state of the stream of RNG
             seed_convergence <- list(state = .Random.seed,
