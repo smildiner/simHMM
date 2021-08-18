@@ -20,7 +20,7 @@ get_pars_surf <- function(pars, baseline) {
 
     # Specify the correct gamma, emiss and eps_str
     if(baseline == TRUE) {
-        gamma_sim <- matrix(c(0.9, 0.1, 0.1,
+        gamma_sim <- matrix(c(0.9, 0.05, 0.05,
                               0.1, 0.7, 0.2,
                               0.2, 0.3, 0.5), ncol = 3, byrow = TRUE)
     } else {

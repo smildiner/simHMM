@@ -118,14 +118,26 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     })
 
     # Add scenario and iteration info
-    out <- list(seed = list("data" = seed_state, "convergence" = seed_convergence),
-                # seed = seed_state,
-                scenario_uid = model_pars[["scenario_uid"]],
-                uid = model_pars[["uid"]],
-                time = exe_time[[3]],
-                truth = sim_data,
-                map = map_out,
-                cci = cci_out)
+
+    if(convergence == TRUE) {
+        out <- list(seed = list("data" = seed_state, "convergence" = seed_convergence),
+                    # seed = seed_state,
+                    scenario_uid = model_pars[["scenario_uid"]],
+                    uid = model_pars[["uid"]],
+                    time = exe_time[[3]],
+                    truth = sim_data,
+                    map = map_out,
+                    cci = cci_out)
+    } else {
+        out <- list(seed = seed_state,
+                    # seed = seed_state,
+                    scenario_uid = model_pars[["scenario_uid"]],
+                    uid = model_pars[["uid"]],
+                    time = exe_time[[3]],
+                    truth = sim_data,
+                    map = map_out,
+                    cci = cci_out)
+    }
 
     # Save results: add the actual outcomes
     # saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))
