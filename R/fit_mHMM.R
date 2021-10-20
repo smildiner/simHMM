@@ -13,6 +13,7 @@ fit_mHMM <- function(m,
                      start_emiss = NULL,
                      data_sim,
                      light = FALSE,
+                     save_path = FALSE,
                      save_subj_data = TRUE) {
 
     # Set starting values
@@ -45,7 +46,7 @@ fit_mHMM <- function(m,
                                 # xx = xx_vec,
                                 start_val = c(list(start_gamma), start_emiss),
                                 mcmc = list(J = iter, burn_in = burnin),
-                                return_path = FALSE,
+                                return_path = save_path,
                                 show_progress = FALSE)
     } else {
         out <- simHMM::mHMMlight(s_data = data_sim$obs,
@@ -53,7 +54,7 @@ fit_mHMM <- function(m,
                                 # xx = xx_vec,
                                 start_val = c(list(start_gamma), start_emiss),
                                 mcmc = list(J = iter, burn_in = burnin),
-                                return_path = FALSE,
+                                return_path = save_path,
                                 show_progress = FALSE,
                                 save_subj_data = save_subj_data)
     }

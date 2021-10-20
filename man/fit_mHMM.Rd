@@ -16,6 +16,7 @@ fit_mHMM(
   start_emiss = NULL,
   data_sim,
   light = FALSE,
+  save_path = FALSE,
   save_subj_data = TRUE
 )
 }

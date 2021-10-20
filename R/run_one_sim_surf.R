@@ -6,7 +6,7 @@
 #'
 #' @export
 
-run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE){
+run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE){
 
     # Legend
     #   pars[1] = sample_size
@@ -101,13 +101,23 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
             data_sim = sim_data,
             # Fit mHMM with lower memory use
             light = light,
+            # Save local decoding
+            save_path = save_path,
             # Save subject level results
             save_subj_data = save_subj_data
         )
 
-        # Add between subject variance to the output
+        # Add mepirical between subject variance to the output
         if(light == FALSE) {
             model_output <- c(model_output, get_var_bar(model_output))
+        }
+
+        # Save local decoding?
+        if(save_path == TRUE){
+            local_decode <- lapply(model_output[["sample_path"]], function(e) t(apply(e[,(model_pars[["burnin"]]+1):model_pars[["iter"]]],1,function(r) {
+                r <- factor(r, levels = 1:model_pars[["m"]], labels = paste0("S",1:model_pars[["m"]]))
+                table(r)/length(r)
+            })))
         }
 
         # Get MAP estimates
@@ -138,6 +148,10 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
                     truth = sim_data,
                     map = map_out,
                     cci = cci_out)
+    }
+
+    if(save_path == TRUE){
+        out <- c(out, local_decode)
     }
 
     # Save results: add the actual outcomes
