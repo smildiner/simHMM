@@ -107,7 +107,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
             save_subj_data = save_subj_data
         )
 
-        # Add mepirical between subject variance to the output
+        # Add empirical between subject variance to the output
         if(light == FALSE) {
             model_output <- c(model_output, get_var_bar(model_output))
         }
@@ -151,7 +151,7 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     }
 
     if(save_path == TRUE){
-        out <- c(out, local_decode)
+        out <- c(out, ldecoding = list(local_decode))
     }
 
     # Save results: add the actual outcomes
