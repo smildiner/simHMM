@@ -14,13 +14,15 @@ fit_mHMM <- function(m,
                      data_sim,
                      light = FALSE,
                      save_path = FALSE,
-                     save_subj_data = TRUE) {
+                     save_subj_data = TRUE,
+                     progress_line = FALSE) {
 
     # Set starting values
     # gamma_start
     if (is.null(start_gamma)) {
 
-        start_gamma <- diag(runif(1, 0.7, 0.9), m)
+        # start_gamma <- diag(runif(1, 0.7, 0.9), m)
+        start_gamma <- diag(c(runif(1, 0.85, 0.95),runif(1, 0.65, 0.75),runif(1, 0.45, 0.55)))
         start_gamma[lower.tri(start_gamma) | upper.tri(start_gamma)] <- (1 - diag(start_gamma)) / (m - 1)
 
     }
@@ -47,7 +49,7 @@ fit_mHMM <- function(m,
                                 start_val = c(list(start_gamma), start_emiss),
                                 mcmc = list(J = iter, burn_in = burnin),
                                 return_path = save_path,
-                                show_progress = FALSE)
+                                show_progress = progress_line)
     } else {
         out <- simHMM::mHMMlight(s_data = data_sim$obs,
                                 gen = list(m = m, n_dep = n_dep, q_emiss = q_emiss),
@@ -55,7 +57,7 @@ fit_mHMM <- function(m,
                                 start_val = c(list(start_gamma), start_emiss),
                                 mcmc = list(J = iter, burn_in = burnin),
                                 return_path = save_path,
-                                show_progress = FALSE,
+                                show_progress = progress_line,
                                 save_subj_data = save_subj_data)
     }
     out[["time"]] <- Sys.time() - ti
