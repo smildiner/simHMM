@@ -1154,7 +1154,12 @@ input <- "STOPOS_VALUE: 30 800 2 0.09 moderate 20 10 1 s7dc1df0f3be42788469dc7ee
 
 argv <- stringr::str_split(input, " ")[[1]][-1]
 
-out <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE)
+peakRAM_subj <- peakRAM::peakRAM(out <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE))
+
+peakRAM_group <- peakRAM::peakRAM(out <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = FALSE, baseline = FALSE, convergence = TRUE, save_path = FALSE))
+
+peakRAM_subj
+peakRAM_group
 
 out$map$gamma_prob_bar
 
@@ -1163,7 +1168,47 @@ out$output$gamma_V_int_bar
 out$truth$subject_gamma
 
 
+peakRAM::peakRAM(2+2)
 
+5579942/1024
 
+# Profvis
+memory_prof <- profvis::profvis(out <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE))
+
+memory_prof2 <- profvis::profvis(out2 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = FALSE, baseline = FALSE, convergence = TRUE, save_path = FALSE))
+
+mem <- max(memory_prof$x$message$prof$memalloc)
+
+# Profmem
+profmem_subj_20 <- profmem::profmem(out_subj_20 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE))
+
+profmem_subj_20$bytes
+
+print(profmem_subj_20, expr = FALSE)
+
+# Microbenchmark
+library(microbenchmark)
+
+bench_subj <- microbenchmark::microbenchmark(out_subj_1000 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE), times = 1)
+bench_group <- microbenchmark::microbenchmark(out_group_1000 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = FALSE, baseline = FALSE, convergence = TRUE, save_path = FALSE), times = 1)
+bench_subj
+bench_group
+print(object.size(out),units = "Mb")
+print(object.size(out$output),units = "Mb")
+print(object.size(out2),units = "Mb")
+print(object.size(out2$output),units = "Mb")
+
+25700/177
+
+# Profmem
+library(profmem)
+
+object.size(out)/2^20
+
+# gc()
+# Rprof("Rprof.out", memory.profiling=TRUE)
+# out <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE)
+# Rprof(NULL)
+# summaryRprof("Rprof.out", memory="both")$by.total$mem.total
 
 
