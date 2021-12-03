@@ -68,16 +68,16 @@ test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, ba
             return_ind_par = TRUE
         )
 
-        if(convergence == TRUE){
-            # Set L'Ecuyer random seed
-            RNGkind("L'Ecuyer-CMRG")
-            set.seed(42)
-            .Random.seed <<- as.integer(matrix(as.numeric(pars[18:24]), nrow = 1))
-
-            # Store the current state of the stream of RNG
-            seed_convergence <- list(state = .Random.seed,
-                                     kind = RNGkind())
-        }
+        # if(convergence == TRUE){
+        #     # Set L'Ecuyer random seed
+        #     RNGkind("L'Ecuyer-CMRG")
+        #     set.seed(42)
+        #     .Random.seed <<- as.integer(matrix(as.numeric(pars[18:24]), nrow = 1))
+        #
+        #     # Store the current state of the stream of RNG
+        #     seed_convergence <- list(state = .Random.seed,
+        #                              kind = RNGkind())
+        # }
 
         # Fit mHMMbayes model
         model_output <- test_fit_mHMM(

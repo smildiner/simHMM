@@ -1149,10 +1149,19 @@ test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, ba
 
 }
 
+# Test
+library(tidyverse)
+library(simHMM)
 
-input <- "STOPOS_VALUE: 30 800 2 0.09 moderate 20 10 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706 new good"
+input <- "STOPOS_VALUE: 90 1600 2 0.09 moderate 200 100 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706 new good"
 
 argv <- stringr::str_split(input, " ")[[1]][-1]
+
+
+out_subj_200 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE)
+
+out_subj_200 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE)
+
 
 peakRAM_subj <- peakRAM::peakRAM(out <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE))
 
