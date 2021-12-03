@@ -6,7 +6,7 @@
 #'
 #' @export
 
-test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE){
+test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE, progress_line = FALSE){
 
     # Legend
     #   pars[1] = sample_size
@@ -40,7 +40,7 @@ test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, ba
                            kind = RNGkind())
 
         # Get simulation parameters
-        model_pars <- test_get_pars_surf(pars, baseline, pars[18])
+        model_pars <- test_get_pars_surf(pars, baseline, as.character(pars[18]))
 
         # Simulate data
         sim_data <- sim_mHMM(
@@ -107,8 +107,8 @@ test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, ba
             save_path = save_path,
             # Save subject level results
             save_subj_data = save_subj_data,
-            progress_line = TRUE,
-            good_bad = pars[19]
+            progress_line = progress_line,
+            good_bad = as.character(pars[19])
         )
 
         # Add empirical between subject variance to the output
