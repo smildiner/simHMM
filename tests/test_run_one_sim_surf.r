@@ -1221,3 +1221,45 @@ object.size(out)/2^20
 # summaryRprof("Rprof.out", memory="both")$by.total$mem.total
 
 
+#------------------------------------------------------------------------------#
+# Train model with new and old code and compare timing
+
+library(tidyverse)
+library(simHMM)
+
+input <- "STOPOS_VALUE: 5 400 2 0.09 moderate 4000 2000 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706 old bad"
+
+argv <- stringr::str_split(input, " ")[[1]][-1]
+
+out_old <- test_run_one_sim_surf(argv, light = TRUE, save_subj_data = FALSE, baseline = FALSE, convergence = FALSE, save_path = FALSE, progress_line = TRUE)
+
+out_old$output$time * 60
+out_old$time
+
+object.size(out_old)/2^20
+object.size(out_old_old)/2^20
+
+# saveRDS(out_old, "/Users/sebastian/Documents/Utrecht University/PhD/Projects/Simulation studies/SurfSara/get_timings/extra/out_new.rds")
+
+devtools::install_github("smildiner/simHMM", ref = "master")
+
+devtools::install_github("smildiner/simHMM", ref = "dev")
+
+input <- "STOPOS_VALUE: 5 400 2 0.09 moderate 4000 2000 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706"
+argv <- stringr::str_split(input, " ")[[1]][-1]
+out_old_old <- run_one_sim_surf(argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE)
+
+library(simHMM)
+
+input <- "STOPOS_VALUE: 30 1600 2 0.09 moderate 4000 2000 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706"
+argv <- stringr::str_split(input, " ")[[1]][-1]
+out_old <- run_one_sim_surf(argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE,convergence = FALSE,save_path = FALSE)
+out_old_old <- run_one_sim_surf(argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE)
+
+out_old$time
+out_old_old$time/3600
+
+out_old$map$gamma_int_subj
+out_old_old$map
+
+

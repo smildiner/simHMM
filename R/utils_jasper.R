@@ -58,7 +58,11 @@ burn <-  function(x) {
             next
         } else if(names(x)[idx] == "gamma_naccept") {
             next
+        } else if(names(x)[idx] == "gamma_paccept") {
+            next
         } else if(names(x)[idx] == "emiss_naccept") {
+            next
+        } else if(names(x)[idx] == "emiss_paccept") {
             next
         } else if(names(x)[idx] == "time") {
             next
