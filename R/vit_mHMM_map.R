@@ -3,7 +3,7 @@
 #' @export
 
 vit_mHMM_map <- function(object, s_data, data_distr){
-    if(data_distr %in% c("categorical","continuous","poisson")){
+    if(!(data_distr %in% c("categorical","continuous","poisson"))){
         stop("The data distribution is not categorical, continuous or poisson.")
     }
     id         <- unique(s_data[,1])
@@ -25,10 +25,6 @@ vit_mHMM_map <- function(object, s_data, data_distr){
     m          <- sqrt(length(object$gamma_prob_bar[["median"]]))
     if(data_distr == "categorical"){
         q_emiss <- sapply(object$emiss_prob_bar, function(q) (length(q[["median"]])/m)+1 )
-    } else if(data_distr == "continuous"){
-        next
-    } else if(data_distr == "poisson"){
-        next
     }
 
     # if(is.null(burn_in)){
@@ -50,7 +46,7 @@ vit_mHMM_map <- function(object, s_data, data_distr){
                                                 byrow = TRUE, ncol = q_emiss[j], nrow = m)
             }
         }
-        est_gamma <- lapply(object$gamma_prob_bar, function(s) matrix(s[["median"]], nrow = m, ncol = m, byrow = TRUE) )
+        est_gamma <- lapply(object$gamma_int_subj, function(s) int_to_prob(matrix(s[["median"]], nrow = m, byrow = TRUE)) )
         for(s in 1:n_subj){
             emiss <- est_emiss[[s]]
             gamma    <- est_gamma[[s]]
@@ -70,7 +66,7 @@ vit_mHMM_map <- function(object, s_data, data_distr){
                                                 ncol = 2, nrow = m, byrow = FALSE)
             }
         }
-        est_gamma <- lapply(object$gamma_prob_bar, function(s) matrix(s[["median"]], nrow = m, ncol = m, byrow = TRUE) )
+        est_gamma <- lapply(object$gamma_int_subj, function(s) int_to_prob(matrix(s[["median"]], nrow = m, byrow = TRUE)) )
         for(s in 1:n_subj){
             emiss   <- est_emiss[[s]]
             gamma   <- est_gamma[[s]]
@@ -87,7 +83,7 @@ vit_mHMM_map <- function(object, s_data, data_distr){
                                                 byrow = TRUE, nrow = m, ncol = 1)
             }
         }
-        est_gamma <- lapply(object$gamma_prob_bar, function(s) matrix(s[["median"]], nrow = m, ncol = m, byrow = TRUE) )
+        est_gamma <- lapply(object$gamma_int_subj, function(s) int_to_prob(matrix(s[["median"]], nrow = m, byrow = TRUE)) )
         for(s in 1:n_subj){
             emiss   <- est_emiss[[s]]
             gamma   <- est_gamma[[s]]
@@ -99,5 +95,5 @@ vit_mHMM_map <- function(object, s_data, data_distr){
     }
     colnames(state_seq) <- paste0("subj_", id)
     names(state_probs) <- paste0("subj_",id)
-    return(state_seq = state_seq, state_probs = state_probs)
+    return(list("state_seq" = state_seq, "state_probs" = state_probs))
 }
