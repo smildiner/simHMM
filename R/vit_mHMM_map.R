@@ -61,7 +61,7 @@ vit_mHMM_map <- function(object, s_data, data_distr){
             for(q in 1:n_dep){
                 # est_emiss[[s]][[q]][] <- matrix(object$PD_subj[[s]][["median"]][(1+(q-1)*m) : (m+(q-1)*m)],
                 #                                 byrow = TRUE, nrow = m, ncol = 1)
-                est_emiss[[s]][[q]][] <- matrix(c(object$PD_subj[[s]][[]][((q-1) * m + 1) : ((q-1) * m + m)],
+                est_emiss[[s]][[q]][] <- matrix(c(object$PD_subj[[s]][["median"]][((q-1) * m + 1) : ((q-1) * m + m)],
                                                         object$PD_subj[[s]][(n_dep * m + (q-1) * m + 1) : (n_dep * m + (q-1) * m + m)]),
                                                 ncol = 2, nrow = m, byrow = FALSE)
             }
