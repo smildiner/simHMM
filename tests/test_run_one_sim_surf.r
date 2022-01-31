@@ -7,14 +7,20 @@ library(simHMM)
 # Test run_one_surf
 input <- "STOPOS_VALUE: 5 1600 1 0.09 low 4000 2000 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706"
 
-input <- "STOPOS_VALUE: 5 400 1 0.09 low 4000 2000 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706"
+input <- "STOPOS_VALUE: 5 800 2 0.09 low 4000 2000 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706"
 
 input <- "STOPOS_VALUE: 5 1600 1 0.09 low 20 10 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706"
 
 argv <- stringr::str_split(input, " ")[[1]][-1]
 
-out <- run_one_sim_surf(pars = argv, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE)
+out <- run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE)
 
+out$map$sample_path
+
+matrix(colMeans(do.call(rbind, lapply(out$truth$subject_gamma, function(s) as.numeric(t(s))))), nrow = 3, byrow = TRUE)
+out$map$gamma_prob_bar
+
+length(out$map$gamma_prob_bar$median)
 # saveRDS(out, paste0(argv[10],".rds"))
 
 # Try piece by piece
@@ -1158,7 +1164,8 @@ input <- "STOPOS_VALUE: 5 100 2 0.09 moderate 200 100 1 s7dc1df0f3be42788469dc7e
 argv <- stringr::str_split(input, " ")[[1]][-1]
 
 
-out_subj_200 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE)
+out_subj_200 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE, progress_line = TRUE)
+
 
 out_subj_200 <- test_run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = TRUE, save_path = FALSE)
 

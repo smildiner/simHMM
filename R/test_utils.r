@@ -145,6 +145,8 @@ test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, ba
 
     if(save_path == TRUE){
         out <- c(out, ldecoding = list(local_decode))
+    } else {
+        out <- c(out, decoding = list(vit_mHMM_map(object = out[["map"]], s_data = out[["truth"]][["obs"]], data_distr = "categorical")))
     }
 
     return(out)

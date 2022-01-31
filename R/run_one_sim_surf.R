@@ -112,13 +112,13 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
             model_output <- c(model_output, get_var_bar(model_output))
         }
 
-        # Save local decoding?
-        if(save_path == TRUE){
-            local_decode <- lapply(model_output[["sample_path"]], function(e) t(apply(e[,(model_pars[["burnin"]]+1):model_pars[["iter"]]],1,function(r) {
-                r <- factor(r, levels = 1:model_pars[["m"]], labels = paste0("S",1:model_pars[["m"]]))
-                table(r)/length(r)
-            })))
-        }
+        # # Save local decoding?
+        # if(save_path == TRUE){
+        #     local_decode <- lapply(model_output[["sample_path"]], function(e) t(apply(e[,(model_pars[["burnin"]]+1):model_pars[["iter"]]],1,function(r) {
+        #         r <- factor(r, levels = 1:model_pars[["m"]], labels = paste0("S",1:model_pars[["m"]]))
+        #         table(r)/length(r)
+        #     })))
+        # }
 
         # Get MAP estimates
         map_out <- MAP(model_output)
@@ -150,9 +150,9 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
                     cci = cci_out)
     }
 
-    if(save_path == TRUE){
-        out <- c(out, ldecoding = list(local_decode))
-    }
+    # if(save_path == TRUE){
+    #     out <- c(out, ldecoding = list(local_decode))
+    # }
 
     # Save results: add the actual outcomes
     # saveRDS(object = out, file = paste0(model_pars[["uid"]],".rds"))

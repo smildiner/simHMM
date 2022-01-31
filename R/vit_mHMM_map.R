@@ -12,9 +12,10 @@ vit_mHMM_map <- function(object, s_data, data_distr){
         stop("s_data used should be identical to the data used for creating the object in mHMM.
          The number of subjects in the datasets are not the same.")
     }
-    n_vary     <- table(s_data[,1])
-    max_n      <- max(n_vary)
-    state_seq  <- matrix(NA_integer_,ncol = n_subj, nrow = max_n)
+    m           <- length(object[["gamma_prob_bar"]][["median"]])
+    n_vary      <- table(s_data[,1])
+    max_n       <- max(n_vary)
+    state_seq   <- matrix(NA_integer_,ncol = n_subj, nrow = max_n)
     state_probs <- vector("list", length = n_subj)
     for(s in 1:n_subj){
         state_probs[[s]] <- matrix(NA_real_, ncol = m, nrow = n_vary[s])
@@ -50,8 +51,9 @@ vit_mHMM_map <- function(object, s_data, data_distr){
         for(s in 1:n_subj){
             emiss <- est_emiss[[s]]
             gamma    <- est_gamma[[s]]
-            probs    <- cat_Mult_HMM_fw(x = as.matrix(s_data[s_data[,1] == id[s],][,-1], ncol = n_dep),
-                                        m = m, emiss = emiss, n_dep = n_dep, gamma = gamma)$forward_p
+            probs    <- cat_mult_fw_r_to_cpp(x = as.matrix(s_data[s_data[,1] == id[s],][,-1], ncol = n_dep),
+                                        m = m, emiss = emiss, n_dep = n_dep, gamma = gamma, delta = NULL)[[1]]
+            # $forward_p
             state_seq[1:n_vary[s], s] <- apply(probs, 2, which.max)
             state_probs[[s]] <- t(probs)
         }
