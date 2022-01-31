@@ -41,15 +41,15 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
     emiss_int_mle <- rep(list(NULL), n_dep)
     emiss_mhess   <- rep(list(NULL), n_dep)
     for(q in 1:n_dep){
-        emiss_int_mle[[q]] <- matrix(, m, (q_emiss[q] - 1))
-        emiss_mhess[[q]] <- matrix(, (q_emiss[q] - 1) * m, (q_emiss[q] - 1))
+        emiss_int_mle[[q]] <- matrix(NA_real_, m, (q_emiss[q] - 1))
+        emiss_mhess[[q]] <- matrix(NA_real_, (q_emiss[q] - 1) * m, (q_emiss[q] - 1))
     }
     for(s in 1:n_subj){
         ypooled   <- rbind(ypooled, subj_data[[s]]$y)
         n         <- dim(subj_data[[s]]$y)[1]
         n_vary[s] <- n
-        subj_data[[s]]	<- c(subj_data[[s]], n = n, list(gamma_converge = numeric(m), gamma_int_mle = matrix(, m, (m - 1)),
-                                                        gamma_mhess = matrix(, (m - 1) * m, (m - 1)), emiss_converge =
+        subj_data[[s]]	<- c(subj_data[[s]], n = n, list(gamma_converge = numeric(m), gamma_int_mle = matrix(NA_real_, m, (m - 1)),
+                                                        gamma_mhess = matrix(NA_real_, (m - 1) * m, (m - 1)), emiss_converge =
                                                             rep(list(numeric(m)), n_dep), emiss_int_mle = emiss_int_mle, emiss_mhess = emiss_mhess))
     }
     n_total 		<- dim(ypooled)[1]
@@ -173,7 +173,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
 
     # gamma
     gamma_int_mle_pooled <- gamma_pooled_ll <- vector("list", m)
-    gamma_c_int <- rep(list(matrix(, n_subj, (m-1))), m)
+    gamma_c_int <- rep(list(matrix(NA_real_, n_subj, (m-1))), m)
     gamma_mu_int_bar <- gamma_V_int <- vector("list", m)
     gamma_mu_prob_bar <- rep(list(numeric(m)), m)
     gamma_naccept <- matrix(0, n_subj, m)
@@ -193,7 +193,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
         stop("The number of elements in the list start_val should be equal to 1 + the number of dependent variables,
              and should not contain nested lists (i.e., lists within lists)")
     }
-    PD 					  <- matrix(, nrow = J, ncol = sum(m * q_emiss) + m * m + 1)
+    PD 					  <- matrix(NA_real_, nrow = J, ncol = sum(m * q_emiss) + m * m + 1)
     PD_emiss_names   <- paste("q", 1, "_emiss", rep(1:q_emiss[1], m), "_S", rep(1:m, each = q_emiss[1]), sep = "")
     if(n_dep > 1){
         for(q in 2:n_dep){
@@ -208,7 +208,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
     PD_subj				<- rep(list(PD), n_subj)
 
     # Define object for population posterior density (probabilities and regression coefficients parameterization )
-    gamma_prob_bar		<- matrix(, nrow = J, ncol = (m * m))
+    gamma_prob_bar		<- matrix(NA_real_, nrow = J, ncol = (m * m))
     colnames(gamma_prob_bar) <- paste("S", rep(1:m, each = m), "toS", rep(1:m, m), sep = "")
     gamma_prob_bar[1,] <- PD[1,(sum(m*q_emiss) + 1):(sum(m * q_emiss) + m * m)]
     emiss_prob_bar			<- lapply(q_emiss * m, dif_matrix, rows = J)
@@ -218,16 +218,16 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
         start <- c(0, q_emiss * m)
         emiss_prob_bar[[q]][1,] <- PD[1,(sum(start[1:q]) + 1):(sum(start[1:q]) + (m * q_emiss[q]))]
     }
-    gamma_int_bar				<- matrix(, nrow = J, ncol = ((m-1) * m))
+    gamma_int_bar				<- matrix(NA_real_, nrow = J, ncol = ((m-1) * m))
     colnames(gamma_int_bar) <- paste("int_S", rep(1:m, each = m-1), "toS", rep(2:m, m), sep = "")
     gamma_int_bar[1,] <- as.vector(prob_to_int(matrix(gamma_prob_bar[1,], byrow = TRUE, ncol = m, nrow = m)))
 
-    gamma_V_int_bar <- matrix(, nrow = J, ncol = ((m-1) * (m-1) * m))
+    gamma_V_int_bar <- matrix(NA_real_, nrow = J, ncol = ((m-1) * (m-1) * m))
     colnames(gamma_V_int_bar) <- paste("var_int_S", rep(1:m, each = (m-1)*(m-1)), "toS", rep(2:m, each=m-1), "_with_", "int_S", rep(1:m, each = (m-1)*(m-1)), "toS", rep(2:m, m), sep = "")
     gamma_V_int_bar[1,] <- unlist(lapply(gamma_V, function(e) as.vector(t(e))))
 
     if(nx[1] > 1){
-        gamma_cov_bar				<- matrix(, nrow = J, ncol = ((m-1) * m) * (nx[1] - 1))
+        gamma_cov_bar				<- matrix(NA_real_, nrow = J, ncol = ((m-1) * m) * (nx[1] - 1))
         colnames(gamma_cov_bar) <- paste( paste("cov", rep(1 : (nx[1] - 1),each = nx[1]-1), "_", sep = ""), "S", rep(1:m, each = (m-1) * (nx[1] - 1)), "toS", rep(2:m, m * (nx[1] - 1)), sep = "")
         gamma_cov_bar[1,] <- 0
     } else{
@@ -243,7 +243,7 @@ mHMMfast <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FALS
         colnames(emiss_int_bar[[q]]) <-  paste("int_Emiss", rep(2:q_emiss[q], m), "_S", rep(1:m, each = q_emiss[q] - 1), sep = "")
         emiss_int_bar[[q]][1,] <- as.vector(prob_to_int(matrix(emiss_prob_bar[[q]][1,], byrow = TRUE, ncol = q_emiss[q], nrow = m)))
 
-        emiss_V_int_bar[[q]] <- matrix(, nrow = J, ncol = ((q_emiss[q]-1) * (q_emiss[q]-1) * m))
+        emiss_V_int_bar[[q]] <- matrix(NA_real_, nrow = J, ncol = ((q_emiss[q]-1) * (q_emiss[q]-1) * m))
         colnames(emiss_V_int_bar[[q]]) <- paste("var_int_Emiss", rep(2:q_emiss[q], each = (q_emiss[q]-1)),"_with_Emiss",rep(2:q_emiss[q], (q_emiss[q]-1)), "_S", rep(1:m, each = (q_emiss[q] - 1)*(q_emiss[q] - 1)), sep = "")
     }
 
