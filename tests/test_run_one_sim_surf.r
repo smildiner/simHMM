@@ -13,7 +13,7 @@ input <- "STOPOS_VALUE: 5 1600 1 0.09 low 20 10 1 s7dc1df0f3be42788469dc7ee850a7
 
 argv <- stringr::str_split(input, " ")[[1]][-1]
 
-out <- run_one_sim_surf(pars = argv, light = TRUE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = TRUE)
+out <- run_one_sim_surf(pars = argv, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE)
 
 # saveRDS(out, paste0(argv[10],".rds"))
 
@@ -1153,7 +1153,7 @@ test_run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, ba
 library(tidyverse)
 library(simHMM)
 
-input <- "STOPOS_VALUE: 90 1600 2 0.09 moderate 200 100 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706 new good"
+input <- "STOPOS_VALUE: 5 100 2 0.09 moderate 200 100 1 s7dc1df0f3be42788469dc7ee850a77a9 sa9b820ae536d0c1145112dbe2c230a0e 10407 -373039812 -958668525 -1501327587 2023814349 -172849708 -31687706 new good"
 
 argv <- stringr::str_split(input, " ")[[1]][-1]
 
@@ -1262,4 +1262,7 @@ out_old_old$time/3600
 out_old$map$gamma_int_subj
 out_old_old$map
 
+
+
+# Old simulation stile
 
