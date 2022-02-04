@@ -369,10 +369,14 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
                 trans[[s]][[sample_path[[s]][t,iter]]]	<- c(trans[[s]][[sample_path[[s]][t, iter]]], sample_path[[s]][t + 1, iter])
             }
             for (i in 1:m){
-                trans[[s]][[i]] <- c(trans[[s]][[i]], 1:m)
-                trans[[s]][[i]] <- rev(trans[[s]][[i]])
+                # trans[[s]][[i]] <- c(trans[[s]][[i]], 1:m)
+                # trans[[s]][[i]] <- rev(trans[[s]][[i]])
+                if(!is.null(trans[[s]][[i]])){
+                    trans[[s]][[i]] <- rev(trans[[s]][[i]])
+                }
                 for(q in 1:n_dep){
-                    cond_y[[s]][[i]][[q]] <- c(subj_data[[s]]$y[sample_path[[s]][, iter] == i, q], 1:q_emiss[q])
+                    # cond_y[[s]][[i]][[q]] <- c(subj_data[[s]]$y[sample_path[[s]][, iter] == i, q], 1:q_emiss[q])
+                    cond_y[[s]][[i]][[q]] <- subj_data[[s]]$y[sample_path[[s]][, iter] == i, q]
                 }
             }
         }
@@ -471,11 +475,14 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
 
             # Sample subject values for gamma and conditional probabilities using RW Metropolis sampler -----------
             for (s in 1:n_subj){
+                if (is.null(trans[[s]][[i]]) | (length(trans[[s]][[i]]) == 1)) {
+                    trans[[s]][[i]] <- c(trans[[s]][[i]], c(1:m))
+                }
                 gamma_candcov_comb 			<- chol2inv(chol(subj_data[[s]]$gamma_mhess[(1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1)), ] + chol2inv(chol(gamma_V_int[[i]]))))
                 gamma_RWout					    <- mnl_RW_once(int1 = gamma_c_int[[i]][s,], Obs = trans[[s]][[i]], n_cat = m, mu_int_bar1 = c(t(gamma_mu_int_bar[[i]]) %*% xx[[1]][s,]), V_int1 = gamma_V_int[[i]], scalar = gamma_scalar, candcov1 = gamma_candcov_comb)
                 gamma[[s]][i,]  	<- PD_light[s, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
                 if(save_subj_data){
-                    PD_subj[[s]][iter, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob
+                    PD_subj[[s]][iter, c((sum(m * q_emiss) + 1 + (i - 1) * m):(sum(m * q_emiss) + (i - 1) * m + m))] <- gamma_RWout$prob + 0.000001
                 }
                 gamma_naccept[s, i]			<- gamma_naccept[s, i] + gamma_RWout$accept
                 gamma_c_int[[i]][s,]		<- gamma_int_light[s, (1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1))] <- gamma_RWout$draw_int
@@ -486,11 +493,14 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
 
                 start <- c(0, q_emiss * m)
                 for(q in 1:n_dep){
+                    if (is.null(cond_y[[s]][[i]][[q]]) | (length(cond_y[[s]][[i]][[q]]) == 1)) {
+                        cond_y[[s]][[i]][[q]] <- c(cond_y[[s]][[i]][[q]], c(1:q_emiss[q]))
+                    }
                     emiss_candcov_comb		     <- chol2inv(chol(subj_data[[s]]$emiss_mhess[[q]][(1 + (i - 1) * (q_emiss[q] - 1)):((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1)), ] + chol2inv(chol(emiss_V_int[[i]][[q]]))))
                     emiss_RWout				       <- mnl_RW_once(int1 = emiss_c_int[[i]][[q]][s,], Obs = cond_y[[s]][[i]][[q]], n_cat = q_emiss[q], mu_int_bar1 = c(t(emiss_mu_int_bar[[i]][[q]]) %*% xx[[1 + q]][s,]), V_int1 = emiss_V_int[[i]][[q]], scalar = emiss_scalar[[q]], candcov1 = emiss_candcov_comb)
                     emiss[[s]][[q]][i,]		   <- PD_light[s, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
                     if(save_subj_data){
-                        PD_subj[[s]][iter, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob
+                        PD_subj[[s]][iter, (sum(start[1:q]) + 1 + (i - 1) * q_emiss[q]):(sum(start[1:q]) + (i - 1) * q_emiss[q] + q_emiss[q])] <- emiss_RWout$prob + 0.000001
                     }
                     emiss_naccept[[q]][s, i]	 <- emiss_naccept[[q]][s, i] + emiss_RWout$accept
                     emiss_c_int[[i]][[q]][s,] <- emiss_int_light[[q]][s, (1 + (i - 1) * (q_emiss[q] - 1)) : ((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1))] <- emiss_RWout$draw_int

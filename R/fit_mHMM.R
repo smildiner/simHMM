@@ -36,7 +36,7 @@ fit_mHMM <- function(m,
         # Set seed to simulate datasets
         for (q in 1:n_dep) {
 
-            # start_emiss[[q]] <- int_to_prob(prob_to_int(emiss[[q]]) + matrix(runif(m*(q_emiss[q]-1), -0.5, 0.5), byrow = T, nrow = m, ncol = (q_emiss[q] - 1)))
+            # start_emiss[[q]] <- int_to_prob(prob_to_int(emiss[[q]]) + matrix(runif(m*(q_emiss[q]-1), -1, 1), byrow = T, nrow = m, ncol = (q_emiss[q] - 1)))
             start_emiss[[q]] <- int_to_prob(prob_to_int(emiss[[q]]) * matrix(runif(m*(q_emiss[q]-1), 0.95, 1.05), byrow = TRUE, nrow = m, ncol = (q_emiss[q] - 1)))
 
         }

@@ -194,3 +194,4 @@ prob_to_int <- function(prob1){
     }
     return(round(b0,4))
 }
+
