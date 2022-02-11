@@ -224,7 +224,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
     }
     gamma_int_bar				<- matrix(NA_real_, nrow = J, ncol = ((m-1) * m))
     colnames(gamma_int_bar) <- paste("int_S", rep(1:m, each = m-1), "toS", rep(2:m, m), sep = "")
-    gamma_int_bar[1,] <- as.vector(prob_to_int(matrix(gamma_prob_bar[1,], byrow = TRUE, ncol = m, nrow = m)))
+    gamma_int_bar[1,] <- as.vector(t(prob_to_int(matrix(gamma_prob_bar[1,], byrow = TRUE, ncol = m, nrow = m))))
 
     gamma_V_int_bar <- matrix(NA_real_, nrow = J, ncol = ((m-1) * (m-1) * m))
     colnames(gamma_V_int_bar) <- paste("var_int_S", rep(1:m, each = (m-1)*(m-1)), "toS", rep(2:m, each=m-1), "_with_", "int_S", rep(1:m, each = (m-1)*(m-1)), "toS", rep(2:m, m), sep = "")
