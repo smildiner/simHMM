@@ -369,14 +369,14 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
                 trans[[s]][[sample_path[[s]][t,iter]]]	<- c(trans[[s]][[sample_path[[s]][t, iter]]], sample_path[[s]][t + 1, iter])
             }
             for (i in 1:m){
-                # trans[[s]][[i]] <- c(trans[[s]][[i]], 1:m)
-                # trans[[s]][[i]] <- rev(trans[[s]][[i]])
-                if(!is.null(trans[[s]][[i]])){
-                    trans[[s]][[i]] <- rev(trans[[s]][[i]])
-                }
+                trans[[s]][[i]] <- c(trans[[s]][[i]], 1:m)
+                trans[[s]][[i]] <- rev(trans[[s]][[i]])
+                # if(!is.null(trans[[s]][[i]])){
+                #     trans[[s]][[i]] <- rev(trans[[s]][[i]])
+                # }
                 for(q in 1:n_dep){
-                    # cond_y[[s]][[i]][[q]] <- c(subj_data[[s]]$y[sample_path[[s]][, iter] == i, q], 1:q_emiss[q])
-                    cond_y[[s]][[i]][[q]] <- subj_data[[s]]$y[sample_path[[s]][, iter] == i, q]
+                    cond_y[[s]][[i]][[q]] <- c(subj_data[[s]]$y[sample_path[[s]][, iter] == i, q], 1:q_emiss[q])
+                    # cond_y[[s]][[i]][[q]] <- subj_data[[s]]$y[sample_path[[s]][, iter] == i, q]
                 }
             }
         }
