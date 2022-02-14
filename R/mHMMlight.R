@@ -475,7 +475,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
 
             # Sample subject values for gamma and conditional probabilities using RW Metropolis sampler -----------
             for (s in 1:n_subj){
-                if (is.null(trans[[s]][[i]]) | (length(trans[[s]][[i]]) == 1)) {
+                if (is.null(trans[[s]][[i]]) | (length(trans[[s]][[i]]) %in% c(0) )) {
                     trans[[s]][[i]] <- c(trans[[s]][[i]], c(1:m))
                 }
                 gamma_candcov_comb 			<- chol2inv(chol(subj_data[[s]]$gamma_mhess[(1 + (i - 1) * (m - 1)):((m - 1) + (i - 1) * (m - 1)), ] + chol2inv(chol(gamma_V_int[[i]]))))
@@ -493,7 +493,7 @@ mHMMlight <- function(s_data, gen, xx = NULL, start_val, mcmc, return_path = FAL
 
                 start <- c(0, q_emiss * m)
                 for(q in 1:n_dep){
-                    if (is.null(cond_y[[s]][[i]][[q]]) | (length(cond_y[[s]][[i]][[q]]) == 1)) {
+                    if (is.null(cond_y[[s]][[i]][[q]]) | (length(cond_y[[s]][[i]][[q]]) %in% c(0)) ) {
                         cond_y[[s]][[i]][[q]] <- c(cond_y[[s]][[i]][[q]], c(1:q_emiss[q]))
                     }
                     emiss_candcov_comb		     <- chol2inv(chol(subj_data[[s]]$emiss_mhess[[q]][(1 + (i - 1) * (q_emiss[q] - 1)):((q_emiss[q] - 1) + (i - 1) * (q_emiss[q] - 1)), ] + chol2inv(chol(emiss_V_int[[i]][[q]]))))
