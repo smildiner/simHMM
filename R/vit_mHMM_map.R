@@ -22,7 +22,7 @@ vit_mHMM_map <- function(object, s_data, data_distr){
     }
 
     # input      <- object$input
-    n_dep      <- ncol(s_data[,-1])
+    n_dep      <- ncol(s_data) - 1
     m          <- sqrt(length(object$gamma_prob_bar[["median"]]))
     if(data_distr == "categorical"){
         q_emiss <- sapply(object$emiss_prob_bar, function(q) (length(q[["median"]])/m) )
