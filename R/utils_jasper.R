@@ -118,18 +118,18 @@ MAP <- function(x) {
             next
         }
         # if numeric, compute MAP
-        if (class(feelthebern[[param_idx]]) == "numeric") {
+        if (class(feelthebern[[param_idx]])[1] == "numeric") {
             map_out[[param_idx]][["mean"]] <- unname(mean(feelthebern[[param_idx]]))
             map_out[[param_idx]][["median"]] <- unname(median(feelthebern[[param_idx]]))
             map_out[[param_idx]][["SE"]] <- unname(sd(feelthebern[[param_idx]]))
-        } else if(mode(feelthebern[[param_idx]]) == "numeric") {
+        } else if(mode(feelthebern[[param_idx]])[1] == "numeric") {
             map_out[[param_idx]][["mean"]] <- unname(apply(feelthebern[[param_idx]], 2, mean))
             map_out[[param_idx]][["median"]] <- unname(apply(feelthebern[[param_idx]], 2, median))
             map_out[[param_idx]][["SE"]] <- unname(apply(feelthebern[[param_idx]], 2, sd))
         } else {
-            if(mode(feelthebern[[param_idx]]) == "list") {
+            if(mode(feelthebern[[param_idx]])[1] == "list") {
                 for(n_subj in seq_along(feelthebern[[param_idx]])) {
-                    if(mode(feelthebern[[param_idx]][[n_subj]]) == "list") {
+                    if(mode(feelthebern[[param_idx]][[n_subj]])[1] == "list") {
                         map_out[[param_idx]][[n_subj]] <- lapply(feelthebern[[param_idx]][[n_subj]], function(x) {
                             list(
                                 "mean" = unname(apply(x, 2, mean)),
