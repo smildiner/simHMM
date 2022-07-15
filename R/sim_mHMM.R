@@ -47,7 +47,7 @@ sim_mHMM <- function(n_t, n, data_distr = 'categorical', m, n_dep = 1,
             if(!isTRUE(all.equal(apply(emiss_distr[[i]], 1, sum), rep(1, m)))){
                 stop("The elements in each row of the emission distribution matrix should sum up to 1, see emission distribution in element", i, ".")
             }
-            }
+        }
         # if(data_distr == 'continuous'){
         #
         # }
@@ -135,14 +135,65 @@ sim_mHMM <- function(n_t, n, data_distr = 'categorical', m, n_dep = 1,
         }
     }
 
-    if(n == 1){
-        var_gamma <- 0
-        var_emiss <- rep(0, n_dep)
+    if(data_distr == 'continuous'){
+        if(n == 1){
+            var_gamma <- 0
+            var_emiss <- rep(0, n_dep)
+        }
+
+        if(is.null(var_emiss)){
+            var_emiss <- rep(0.1, n_dep)
+        } else if(length(var_emiss) != n_dep){
+            stop("The lenght of var_emiss specifying variance between subjects in each of the number of dependent variables should equal the number of dependent variables specified in n_dep")
+        }
     }
-    if(is.null(var_emiss)){
-        var_emiss <- rep(0.1, n_dep)
-    } else if(length(var_emiss) != n_dep){
-        stop("The lenght of var_emiss specifying variance between subjects in each of the number of dependent variables should equal the number of dependent variables specified in n_dep")
+
+    # UPDATED CHECKS: else if(length(var_emiss)==){old check}, if(is.list(var_emiss)){new check}
+    if(data_distr == 'categorical'){
+
+        # If only 1 subject
+        if(n == 1){
+            var_gamma <- matrix(rep(0, m*(m-1)),nrow = m, byrow = TRUE)
+            var_emiss <- rep(list(NULL), n_dep)
+            for(i in 1:n_dep){
+                var_emiss[[i]] <- matrix(rep(0, m*(q_emiss[i]-1)),nrow = m, byrow = TRUE)
+            }
+        }
+
+        # If a single value of var_gamma specified, use for all categories
+        if(length(var_gamma) == 1){
+            var_gamma <- matrix(rep(var_gamma, m*(m-1)),nrow = m, byrow = TRUE)
+        } else if(is.matrix(var_gamma)){
+            if (dim(var_gamma)[1] != m){
+                stop(paste("The betweem-subject variance matrix for the transition distribution should be a", m, "by", m-1, "matrix."))
+            }
+            if (dim(var_gamma)[2] != m-1){
+                stop(paste("The betweem-subject variance matrix for the transition distribution should be a", m, "by", m-1, "matrix."))
+            }
+        }
+
+        # If a single value of var_emiss specified, use for all categories and n_dep
+        if(is.null(var_emiss)){
+            var_emiss <- rep(list(NULL), n_dep)
+            for(i in 1:n_dep){
+                var_emiss[[i]] <- matrix(rep(0.1, m*(q_emiss[i]-1)),nrow = m, byrow = TRUE)
+            }
+        } else if(is.numeric(var_emiss) & length(var_emiss) == n_dep){
+            arg_var_emiss <- var_emiss
+            var_emiss <- rep(list(NULL), n_dep)
+            for(i in 1:n_dep){
+                var_emiss[[i]] <- matrix(rep(arg_var_emiss[i], m*(q_emiss[i]-1)),nrow = m, byrow = TRUE)
+            }
+        } else if(is.list(var_emiss)){
+            for(i in 1:n_dep){
+                if(dim(var_emiss[[i]])[2] != q_emiss[i]-1){
+                    stop(paste("The number of columns of the between-subject variance for the emission distribution should be
+                           equal to the number of observable categories minus one, which is", q_emiss[i], ". See emission distribution in element", i, "."))
+                }
+            }
+        } else if(length(var_emiss) != n_dep){
+            stop("The lenght of var_emiss specifying variance between subjects in each of the number of dependent variables should equal the number of dependent variables specified in n_dep. Note that var_emiss can either by a list of matrices, or a numeric vector.")
+        }
     }
 
     #############
@@ -163,12 +214,16 @@ sim_mHMM <- function(n_t, n, data_distr = 'categorical', m, n_dep = 1,
         }
     }
     for(j in 1:n){
+        # sub_gamma[[j]] <- int_to_prob(mnl_gamma + xx_vec[[1]][j] * beta[[1]] +
+        #                                   rnorm(n = m * (m-1), mean = 0, sd = sqrt(var_gamma)))
         sub_gamma[[j]] <- int_to_prob(mnl_gamma + xx_vec[[1]][j] * beta[[1]] +
-                                          rnorm(n = m * (m-1), mean = 0, sd = sqrt(var_gamma)))
+                                          rnorm(n = m * (m-1), mean = 0, sd = sqrt(as.numeric(var_gamma))))
         for(i in 1:n_dep){
             if(data_distr == "categorical"){
+                # sub_emiss[[j]][[i]] <- int_to_prob(mnl_emiss[[i]] + xx_vec[[1+i]][j] * beta[[1+i]] +
+                #                                        rnorm(n = m * (q_emiss[i]-1), mean = 0, sd = sqrt(var_emiss[i])))
                 sub_emiss[[j]][[i]] <- int_to_prob(mnl_emiss[[i]] + xx_vec[[1+i]][j] * beta[[1+i]] +
-                                                       rnorm(n = m * (q_emiss[i]-1), mean = 0, sd = sqrt(var_emiss[i])))
+                                                       rnorm(n = m * (q_emiss[i]-1), mean = 0, sd = sqrt(as.numeric(var_emiss[[i]]))))
             } else if(data_distr == "continuous"){
                 sub_emiss[[j]][[i]] <- emiss_distr[[i]]
                 sub_emiss[[j]][[i]][,1] <- emiss_distr[[i]][,1] +  xx_vec[[1+i]][j] * beta[[1+i]] +
