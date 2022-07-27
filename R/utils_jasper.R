@@ -205,16 +205,16 @@ get_cci <- function(x) {
             next
         }
         # if numeric, compute MAP
-        if (class(feelthebern[[param_idx]]) == "numeric") {
+        if (class(feelthebern[[param_idx]])[1] == "numeric") {
             cci_out[[param_idx]][["CCI_95"]] <- unname(as.vector(quantile(feelthebern[[param_idx]], c(0.0275,0.975))))
             cci_out[[param_idx]][["CCI_99"]] <- unname(as.vector(quantile(feelthebern[[param_idx]], c(0.005, 0.995))))
-        } else if(mode(feelthebern[[param_idx]]) == "numeric") {
+        } else if(mode(feelthebern[[param_idx]])[1] == "numeric") {
             cci_out[[param_idx]][["CCI_95"]] <- unname(as.vector(credible_interval(feelthebern[[param_idx]], "0.95")))
             cci_out[[param_idx]][["CCI_99"]] <- unname(as.vector(credible_interval(feelthebern[[param_idx]], "0.99")))
         } else {
-            if(mode(feelthebern[[param_idx]]) == "list") {
+            if(mode(feelthebern[[param_idx]])[1] == "list") {
                 for(n_subj in seq_along(feelthebern[[param_idx]])) {
-                    if(mode(feelthebern[[param_idx]][[n_subj]]) == "list") {
+                    if(mode(feelthebern[[param_idx]][[n_subj]])[1] == "list") {
                         cci_out[[param_idx]][[n_subj]] <- lapply(feelthebern[[param_idx]][[n_subj]], function(x) {
                             list(
                                 "CCI_95" = unname(as.vector(credible_interval(x, "0.95"))),
