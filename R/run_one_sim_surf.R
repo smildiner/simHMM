@@ -7,7 +7,7 @@
 #'
 #' @export
 
-run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE){
+run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baseline = FALSE, convergence = FALSE, save_path = FALSE, rebuttal = FALSE){
 
     # Legend
     #   pars[1] = sample_size
@@ -22,6 +22,8 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
     #   pars[10] = uid
     #   pars[11:17] = .Random.seed for simulation
     #   pars[18:24] = .Random.seed for convergence run
+    #   pars[25] = extra_emiss
+    #   pars[26] = n_extra
 
     exe_time <- system.time({
 
@@ -39,7 +41,11 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
                            kind = RNGkind())
 
         # Get simulation parameters
-        model_pars <- get_pars_surf(pars, baseline)
+        if(rebuttal == TRUE) {
+            model_pars <- get_pars_surf(pars, baseline, extra_emiss = as.character(pars[25]), n_extra = as.numeric(pars[26]))
+        } else {
+            model_pars <- get_pars_surf(pars, baseline, extra_emiss = "base", n_extra = 0)
+        }
 
         # Simulate data
         sim_data <- sim_mHMM(
@@ -76,6 +82,16 @@ run_one_sim_surf <- function(pars, light = FALSE, save_subj_data = TRUE, baselin
             # Store the current state of the stream of RNG
             seed_convergence <- list(state = .Random.seed,
                                kind = RNGkind())
+        }
+
+        if(rebuttal == TRUE){
+            if(as.character(pars[25]) == "identical"){
+                sim_data$obs <- cbind(sim_data$obs, sim_data$obs[,-1])
+                colnames(sim_data$obs)[(1+model_pars[["n_dep"]]+1):(1+model_pars[["n_dep"]]+model_pars[["n_dep"]])] <- paste0(colnames(sim_data$obs)[(1+model_pars[["n_dep"]]+1):(1+model_pars[["n_dep"]]+model_pars[["n_dep"]])],"b")
+                model_pars[["n_dep"]] <- ncol(sim_data$obs)-1
+                model_pars[["q_emiss"]] <- rep(model_pars[["q_emiss"]],2)
+                model_pars[["emiss_sim"]] <- c(model_pars[["emiss_sim"]], model_pars[["emiss_sim"]])
+            }
         }
 
         # Fit mHMMbayes model
