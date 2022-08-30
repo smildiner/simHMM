@@ -15,6 +15,8 @@ init_log <- function(sim_sample_size = 30,
                      sim_emiss_var = 1,
                      sim_noisiness = c(0.03, 0.09, 0.15),
                      sim_overlapping = c("low", "moderate", "high"),
+                     sim_extra_emiss = c("base","identical","noise"),
+                     sim_n_extra = c(1,2,4,6),
 
                      # Simulation parameters:
                      sim_iter = 5000,
@@ -38,6 +40,8 @@ init_log <- function(sim_sample_size = 30,
                                  "iter" = sim_iter,
                                  "burnin" = sim_burnin,
                                  "repetitions" = sim_repetitions,
+                                 "extra_emiss" = sim_extra_emiss,
+                                 "n_extra" = sim_n_extra,
                                  stringsAsFactors = FALSE)
 
     # Add scenario id
