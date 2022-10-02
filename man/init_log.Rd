@@ -14,6 +14,8 @@ init_log(
   sim_emiss_var = 1,
   sim_noisiness = c(0.03, 0.09, 0.15),
   sim_overlapping = c("low", "moderate", "high"),
+  sim_extra_emiss = c("base", "identical", "noise"),
+  sim_n_extra = c(1, 2, 4, 6),
   sim_iter = 5000,
   sim_burnin = 1500,
   sim_repetitions = 1:250,

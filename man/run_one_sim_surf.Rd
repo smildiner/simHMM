@@ -10,7 +10,8 @@ run_one_sim_surf(
   save_subj_data = TRUE,
   baseline = FALSE,
   convergence = FALSE,
-  save_path = FALSE
+  save_path = FALSE,
+  rebuttal = FALSE
 )
 }
 \description{

@@ -819,6 +819,11 @@ get_pars_surf <- function(pars, baseline, extra_emiss = NULL, n_extra = NULL) {
         emiss_var <- c(emiss_var, c(rep(list(matrix(0.34, nrow = 3, ncol = 4)),8))[1:n_extra])
         n_dep <- n_dep + n_extra
         q_emiss <- c(q_emiss, rep(5, n_extra))
+    } else if (extra_emiss == "identical"){
+        emiss_sim <- c(emiss_sim, emiss_sim[1:n_extra])
+        emiss_var <- c(emiss_var, emiss_var[1:n_extra])
+        n_dep <- n_dep + n_extra
+        q_emiss <- c(q_emiss, rep(5, n_extra))
     }
 
     # Return model parameters
